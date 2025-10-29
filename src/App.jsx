@@ -213,7 +213,7 @@ function AppContent() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900">悠悠</h1>
-              <p className="text-sm text-gray-500">AI数字人智能对话系统</p>
+              <p className="text-sm text-gray-500">AI情感陪伴数字人智能对话系统</p>
             </div>
           </div>
 

@@ -104,17 +104,17 @@ export function UserMenu() {
             {/* 菜单项 */}
             <div className="p-2">
               {/* 对话统计 */}
-              <div className="px-4 py-3 mb-1">
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <CreditCard className="w-4 h-4" />
-                    <span>对话轮次</span>
-                  </div>
-                  <span className="font-semibold text-gray-900">
-                    {session.profile?.conversation_count || 0} 次
-                  </span>
-                </div>
-              </div>
+              {/*<div className="px-4 py-3 mb-1">*/}
+              {/*  <div className="flex items-center justify-between text-sm">*/}
+              {/*    <div className="flex items-center gap-2 text-gray-600">*/}
+              {/*      <CreditCard className="w-4 h-4" />*/}
+              {/*      <span>对话轮次</span>*/}
+              {/*    </div>*/}
+              {/*    <span className="font-semibold text-gray-900">*/}
+              {/*      {session.profile?.conversation_count || 0} 次*/}
+              {/*    </span>*/}
+              {/*  </div>*/}
+              {/*</div>*/}
 
               {/* 设置 */}
               <button
