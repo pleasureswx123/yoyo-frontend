@@ -68,9 +68,6 @@ export function ChatContainer() {
       { !!messages.length && (
         <>
           {messages.map((message, index) => {
-            // 跳过空消息(正在生成中的消息)
-            const isGenerating = message.id === 'current-bot-message' && !message.content
-
             return (
               <motion.div
                 key={message.id || index}

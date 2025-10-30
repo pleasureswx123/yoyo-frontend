@@ -157,11 +157,11 @@ function AppContent() {
     // 处理生成开始
     const handleGenerationStart = (data) => {
       console.log('📝 生成开始')
-      // 创建一个新的空消息
+      // 创建一个新的空消息，使用唯一 ID
       addMessage({
         type: 'bot',
         content: '',
-        id: 'current-bot-message' // 特殊 ID 用于标识当前正在生成的消息
+        id: `bot-message-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` // 使用时间戳+随机字符串生成唯一 ID
       })
       setIsTyping(true)
     }
