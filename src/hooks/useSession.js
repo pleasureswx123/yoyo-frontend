@@ -42,30 +42,17 @@ export function useSession() {
     setSession(null)
   }, [])
 
-  // 更新会话
-  const updateSession = useCallback((updates) => {
-    sessionService.updateSession(updates)
-    setSession({ ...session, ...updates })
-  }, [session])
-
-  // 更新档案
-  const updateProfile = useCallback((profileData) => {
-    sessionService.updateProfile(profileData)
-    setSession({
-      ...session,
-      profile: { ...session?.profile, ...profileData }
-    })
-  }, [session])
-
-  // 增加对话计数
-  const incrementConversationCount = useCallback(() => {
-    sessionService.incrementConversationCount()
-    setSession({
-      ...session,
-      conversation_count: (session?.conversation_count || 0) + 1,
-      last_conversation_time: new Date().toISOString()
-    })
-  }, [session])
+  // 刷新会话
+  const refreshSession = useCallback(async (showLoading = false) => {
+    try {
+      const refreshedSession = await sessionService.refreshSession(showLoading)
+      setSession(refreshedSession)
+      return refreshedSession
+    } catch (error) {
+      console.error('刷新会话失败:', error)
+      throw error
+    }
+  }, [])
 
   // 搜索用户
   const searchUsers = useCallback(async (query) => {
@@ -81,14 +68,12 @@ export function useSession() {
     session,
     isLoading,
     isLoggedIn: !!session,
-    userId: session?.user_id,
-    userName: session?.name,
+    userId: session?.userId,      // ✅ 修正字段名
+    userName: session?.userName,  // ✅ 修正字段名
     profile: session?.profile,
     login,
     logout,
-    updateSession,
-    updateProfile,
-    incrementConversationCount,
+    refreshSession,
     searchUsers,
     getActiveUsers
   }

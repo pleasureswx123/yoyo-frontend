@@ -95,11 +95,6 @@ export function AppProvider({ children }) {
       } : null
     })
 
-    if (success) {
-      // 增加对话计数
-      session.incrementConversationCount()
-    }
-
     return success
   }, [websocket, audio, session, addMessage])
 
