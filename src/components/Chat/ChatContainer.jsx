@@ -44,20 +44,20 @@ export function ChatContainer() {
   }
 
   return (
-    <div className="h-full overflow-y-auto bg-white">
+    <div className="h-full overflow-y-auto bg-gray-50/30">
       {/*欢迎消息*/}
-      <div className="w-full py-4 border-b border-gray-100">
+      <div className="w-full py-6">
         <div className="max-w-4xl mx-auto px-6">
-          <div className="flex items-start gap-4">
+          <div className="flex items-start gap-3">
             {/* AI 头像 */}
-            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center text-white font-semibold shadow-sm">
+            <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-purple-400/90 to-pink-400/90 flex items-center justify-center text-white text-sm font-medium shadow-sm">
               AI
             </div>
 
             {/* 消息内容 */}
             <div className="flex-1">
-              <div className="inline-block bg-gray-50 rounded-2xl rounded-tl-sm px-5 py-3 max-w-2xl">
-                <p className="text-gray-800 leading-relaxed">
+              <div className="inline-block bg-gray-100/60 rounded-3xl rounded-tl-md px-5 py-3.5 max-w-2xl">
+                <p className="text-gray-700 leading-relaxed text-[15px]">
                   {getWelcomeMessage()}
                 </p>
               </div>
@@ -73,55 +73,55 @@ export function ChatContainer() {
                 key={message.id || index}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-                className="w-full py-4 border-b border-gray-100"
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+                className="w-full py-1.5"
               >
                 <div className="max-w-4xl mx-auto px-6">
                   {message.type === 'system' ? (
                     /* 系统消息 - 居中 */
-                    <div className="text-center text-gray-400 text-sm italic py-2">
+                    <div className="text-center text-gray-400/80 text-sm py-2">
                       {message.content}
                     </div>
                   ) : message.type === 'user' ? (
                     /* 用户消息 - 右侧 */
-                    <div className="flex items-start gap-4 justify-end">
+                    <div className="flex items-start gap-3 justify-end">
                       {/* 消息内容 */}
                       <div className="flex-1 flex justify-end">
-                        <div className="inline-block bg-gray-900 text-white rounded-2xl rounded-tr-sm px-5 py-3 max-w-2xl">
-                          <p className="leading-relaxed">
+                        <div className="inline-block bg-gray-100/60 text-gray-700 rounded-3xl rounded-tr-md px-4 py-2.5 max-w-2xl shadow-sm">
+                          <p className="leading-relaxed text-[15px]">
                             {formatMessage(message.content)}
                           </p>
                         </div>
                       </div>
 
                       {/* 用户头像 */}
-                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center text-white font-semibold shadow-sm">
+                      <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-blue-400/90 to-cyan-400/90 flex items-center justify-center text-white text-sm font-medium shadow-sm">
                         {getUserInitial()}
                       </div>
                     </div>
                   ) : (
                     /* AI 消息 - 左侧 */
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-start gap-3">
                       {/* AI 头像 */}
-                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center text-white font-semibold shadow-sm">
+                      <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-purple-400/90 to-pink-400/90 flex items-center justify-center text-white text-sm font-medium shadow-sm">
                         AI
                       </div>
 
                       {/* 消息内容 */}
                       <div className="flex-1">
                         {message.content ? (
-                          <div className="inline-block bg-gray-50 rounded-2xl rounded-tl-sm px-5 py-3 max-w-2xl">
-                            <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+                          <div className="inline-block bg-gray-100/60 rounded-3xl rounded-tl-md px-4 py-2.5 max-w-2xl">
+                            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-[15px]">
                               {formatMessage(message.content)}
                             </p>
                           </div>
                         ) : (
                           /* 空消息显示打字指示器 */
-                          <div className="inline-block bg-gray-50 rounded-2xl rounded-tl-sm px-5 py-3">
+                          <div className="inline-block bg-gray-100/60 rounded-3xl rounded-tl-md px-5 py-3.5">
                             <div className="flex gap-1.5">
-                              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                              <div className="w-2 h-2 bg-gray-400/70 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                              <div className="w-2 h-2 bg-gray-400/70 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                              <div className="w-2 h-2 bg-gray-400/70 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                             </div>
                           </div>
                         )}

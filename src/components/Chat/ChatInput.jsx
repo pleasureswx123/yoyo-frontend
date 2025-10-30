@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Send, Mic, Paperclip, CornerDownLeft } from 'lucide-react'
+import { Send, Mic, Paperclip } from 'lucide-react'
 import { useApp } from '../../contexts/AppContext'
 
 /**
@@ -200,80 +200,98 @@ export function ChatInput() {
   }, [websocket, audio, bestASRText])
 
   return (
-    <div className="border-t border-gray-200 bg-white">
-      <div className="max-w-4xl mx-auto px-6 py-4">
+    <div className="bg-gray-50/50">
+      <div className="max-w-4xl mx-auto px-6 py-6">
         {/* ASR 状态提示 */}
         {audio.isRecording && (
-          <div className="mb-3 text-sm text-red-600 flex items-center gap-2">
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-            <span>正在录音... (松开按钮结束)</span>
+          <div className="mb-4 px-4 py-3 bg-red-50/80 rounded-2xl flex items-center gap-3">
+            <div className="relative flex items-center justify-center">
+              <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
+              <div className="absolute w-4 h-4 bg-red-400 rounded-full animate-ping opacity-75" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-red-900">正在录音中...</p>
+              <p className="text-xs text-red-600/80 mt-0.5">松开麦克风按钮结束录音</p>
+            </div>
           </div>
         )}
 
         {audio.asrText && !audio.isRecording && (
-          <div className="mb-3 text-sm text-green-600">
-            识别结果: {audio.asrText}
+          <div className="mb-4 px-4 py-3 bg-green-50/80 rounded-2xl">
+            <p className="text-xs text-green-600/80 font-medium mb-1">识别结果</p>
+            <p className="text-sm text-green-900">{audio.asrText}</p>
           </div>
         )}
 
-        {/* 输入区域 */}
-        <div className="flex items-end gap-3">
-          {/* 左侧按钮组 */}
-          <div className="flex items-center gap-2">
-            {/* 附件按钮 */}
-            <button
-              className="p-2.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
-              title="附件"
-            >
-              <Paperclip className="w-5 h-5" />
-            </button>
-
-            {/* 麦克风按钮 - 按住说话 */}
-            <button
-              onMouseDown={handleMicMouseDown}
-              onMouseUp={handleMicMouseUp}
-              onMouseLeave={handleMicMouseLeave}
-              className={`p-2.5 rounded-lg transition-colors select-none ${
-                audio.isRecording
-                  ? 'bg-red-500 text-white animate-pulse'
-                  : 'hover:bg-gray-100 text-gray-600'
-              }`}
-              title="按住说话"
-            >
-              <Mic className="w-5 h-5" />
-            </button>
-          </div>
-
+        {/* 主输入区域 - 参考截图设计 */}
+        <div className="relative bg-gray-100/80 rounded-3xl shadow-sm hover:shadow transition-shadow duration-200">
           {/* 文本输入框 */}
-          <div className="flex-1 relative">
-            <textarea
-              ref={textareaRef}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={handleKeyPress}
-              placeholder="Type your message..."
-              rows={1}
-              className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent transition-all"
-              style={{ minHeight: '48px', maxHeight: '120px' }}
-            />
+          <textarea
+            ref={textareaRef}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyPress}
+            placeholder="What would you like to know?"
+            rows={1}
+            className="w-full px-6 pt-6 pb-16 bg-transparent border-0 resize-none focus:outline-none text-gray-800 placeholder:text-gray-500/70 text-base leading-relaxed"
+            style={{ minHeight: '120px', maxHeight: '200px' }}
+          />
 
-            {/* 提示文字 */}
-            {!inputValue && (
-              <div className="absolute right-4 bottom-3 text-xs text-gray-400 pointer-events-none">
-                按住麦克风说话
-              </div>
-            )}
+          {/* 底部按钮栏 */}
+          <div className="absolute bottom-0 left-0 right-0 px-4 pb-4 flex items-center justify-between">
+            {/* 左侧按钮组 */}
+            <div className="flex items-center gap-2">
+              {/* 麦克风按钮 */}
+              <button
+                type="button"
+                onMouseDown={handleMicMouseDown}
+                onMouseUp={handleMicMouseUp}
+                onMouseLeave={handleMicMouseLeave}
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+                  audio.isRecording
+                    ? 'bg-red-500 text-white shadow-lg shadow-red-200/50'
+                    : 'bg-gray-200/80 hover:bg-gray-300/80 text-gray-600'
+                }`}
+                title="按住说话"
+              >
+                <Mic className={`w-5 h-5 ${audio.isRecording ? 'animate-pulse' : ''}`} />
+              </button>
+
+              {/* 附件按钮 */}
+              <button
+                type="button"
+                className="w-10 h-10 rounded-full bg-gray-200/80 hover:bg-gray-300/80 text-gray-600 flex items-center justify-center transition-all duration-200"
+                title="添加附件"
+              >
+                <Paperclip className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* 右侧发送按钮 */}
+            <button
+              type="button"
+              onClick={handleSend}
+              disabled={!inputValue.trim()}
+              className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+                inputValue.trim()
+                  ? 'bg-gray-700 hover:bg-gray-800 text-white shadow-sm'
+                  : 'bg-gray-200/50 text-gray-400 cursor-not-allowed'
+              }`}
+              title="发送消息"
+            >
+              <Send className="w-5 h-5" />
+            </button>
           </div>
+        </div>
 
-          {/* 发送按钮 */}
-          <button
-            onClick={handleSend}
-            disabled={!inputValue.trim()}
-            className="px-6 py-3 bg-gray-900 hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-xl transition-all duration-200 flex items-center gap-2 font-medium shadow-sm hover:shadow-md disabled:shadow-none"
-          >
-            <span>Send Message</span>
-            <CornerDownLeft className="w-4 h-4" />
-          </button>
+        {/* 底部免责声明 */}
+        <div className="mt-3 text-center">
+          <p className="text-xs text-gray-500/80 flex items-center justify-center gap-1.5">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            AI can make mistakes, use with caution.
+          </p>
         </div>
       </div>
     </div>
