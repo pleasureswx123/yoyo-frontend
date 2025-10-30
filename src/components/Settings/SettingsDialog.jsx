@@ -375,49 +375,49 @@ export function SettingsDialog({ isOpen, onClose }) {
               </div>
 
               {/* 沉默时间设置 */}
-              {/*<div className="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-xl p-6 border border-orange-100">*/}
-              {/*  <div className="flex items-center gap-3 mb-4">*/}
-              {/*    <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center">*/}
-              {/*      <MessageSquare className="w-5 h-5 text-white" />*/}
-              {/*    </div>*/}
-              {/*    <h3 className="text-lg font-semibold text-gray-900">智能主动对话</h3>*/}
-              {/*  </div>*/}
+              <div className="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-xl p-6 border border-orange-100">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center">
+                    <MessageSquare className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">智能主动对话</h3>
+                </div>
 
-              {/*  <div className="text-sm text-gray-600 mb-4">*/}
-              {/*    AI会在初始化和沉默时自动开启对话*/}
-              {/*  </div>*/}
+                <div className="text-sm text-gray-600 mb-4">
+                  AI会在初始化和沉默时自动开启对话
+                </div>
 
-              {/*  <div className="bg-white rounded-lg p-4 mb-4">*/}
-              {/*    <label className="text-sm font-medium text-gray-700 mb-2 block">*/}
-              {/*      沉默触发时间: <span className="text-orange-600 font-bold">{silenceTimeout}</span> 秒*/}
-              {/*    </label>*/}
-              {/*    <input*/}
-              {/*      type="range"*/}
-              {/*      min="5"*/}
-              {/*      max="120"*/}
-              {/*      step="5"*/}
-              {/*      value={silenceTimeout}*/}
-              {/*      onChange={(e) => setSilenceTimeout(parseInt(e.target.value))}*/}
-              {/*      className="w-full h-2 bg-orange-200 rounded-lg appearance-none cursor-pointer mb-3"*/}
-              {/*    />*/}
-              {/*    <div className="flex justify-between text-xs text-gray-500 mb-3">*/}
-              {/*      <span>5秒</span>*/}
-              {/*      <span>60秒</span>*/}
-              {/*      <span>120秒</span>*/}
-              {/*    </div>*/}
-              {/*    <button*/}
-              {/*      onClick={handleApplySilenceTimeout}*/}
-              {/*      disabled={isSavingSilence}*/}
-              {/*      className="w-full px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"*/}
-              {/*    >*/}
-              {/*      {isSavingSilence ? '保存中...' : '应用设置'}*/}
-              {/*    </button>*/}
-              {/*  </div>*/}
+                <div className="bg-white rounded-lg p-4 mb-4">
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">
+                    沉默触发时间: <span className="text-orange-600 font-bold">{silenceTimeout}</span> 秒
+                  </label>
+                  <input
+                    type="range"
+                    min="5"
+                    max="120"
+                    step="5"
+                    value={silenceTimeout}
+                    onChange={(e) => setSilenceTimeout(parseInt(e.target.value))}
+                    className="w-full h-2 bg-orange-200 rounded-lg appearance-none cursor-pointer mb-3"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mb-3">
+                    <span>5秒</span>
+                    <span>60秒</span>
+                    <span>120秒</span>
+                  </div>
+                  <button
+                    onClick={handleApplySilenceTimeout}
+                    disabled={isSavingSilence}
+                    className="w-full px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSavingSilence ? '保存中...' : '应用设置'}
+                  </button>
+                </div>
 
-              {/*  <div className="bg-white rounded-lg px-4 py-3 text-sm text-gray-600">*/}
-              {/*    智能对话: 已启用 ({silenceTimeout}秒触发)*/}
-              {/*  </div>*/}
-              {/*</div>*/}
+                <div className="bg-white rounded-lg px-4 py-3 text-sm text-gray-600">
+                  智能对话: 已启用 ({silenceTimeout}秒触发)
+                </div>
+              </div>
 
               {/* 性能监测面板 */}
               <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-xl p-6 border border-green-100">

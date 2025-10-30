@@ -45,28 +45,27 @@ export function ChatContainer() {
 
   return (
     <div className="h-full overflow-y-auto bg-white">
-      {messages.length === 0 ? (
-        /* 欢迎消息 */
-        <div className="w-full py-4 border-b border-gray-100">
-          <div className="max-w-4xl mx-auto px-6">
-            <div className="flex items-start gap-4">
-              {/* AI 头像 */}
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center text-white font-semibold shadow-sm">
-                AI
-              </div>
+      {/*欢迎消息*/}
+      <div className="w-full py-4 border-b border-gray-100">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="flex items-start gap-4">
+            {/* AI 头像 */}
+            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center text-white font-semibold shadow-sm">
+              AI
+            </div>
 
-              {/* 消息内容 */}
-              <div className="flex-1">
-                <div className="inline-block bg-gray-50 rounded-2xl rounded-tl-sm px-5 py-3 max-w-2xl">
-                  <p className="text-gray-800 leading-relaxed">
-                    {getWelcomeMessage()}
-                  </p>
-                </div>
+            {/* 消息内容 */}
+            <div className="flex-1">
+              <div className="inline-block bg-gray-50 rounded-2xl rounded-tl-sm px-5 py-3 max-w-2xl">
+                <p className="text-gray-800 leading-relaxed">
+                  {getWelcomeMessage()}
+                </p>
               </div>
             </div>
           </div>
         </div>
-      ) : (
+      </div>
+      { !!messages.length && (
         <>
           {messages.map((message, index) => {
             // 跳过空消息(正在生成中的消息)
