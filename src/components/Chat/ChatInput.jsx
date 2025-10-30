@@ -12,9 +12,10 @@ import { useApp } from '../../contexts/AppContext'
 export function ChatInput() {
   const { sendChatMessage, audio, websocket } = useApp()
   const [inputValue, setInputValue] = useState('')
-  const [isSpaceKeyPressed, setIsSpaceKeyPressed] = useState(false)
-  const [spaceKeyTimer, setSpaceKeyTimer] = useState(null)
+  const [bestASRText, setBestASRText] = useState('')
+  const [isASRStarting, setIsASRStarting] = useState(false) // 标记ASR是否正在启动
   const textareaRef = useRef(null)
+  const inputRef = useRef(null)
 
   // 发送消息
   const handleSend = () => {
@@ -51,73 +52,143 @@ export function ChatInput() {
     autoResizeTextarea()
   }, [inputValue])
 
-  // 空格键长按录音
-  const handleSpaceKeyDown = useCallback(async (e) => {
-    if (e.code !== 'Space' || isSpaceKeyPressed) return
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
-
-    e.preventDefault()
-    setIsSpaceKeyPressed(true)
-
-    const timer = setTimeout(async () => {
-      console.log('🎤 开始录音')
-      try {
-        await audio.startRecording((audioData) => {
-          // 发送音频数据到后端
-          if (websocket.isConnected) {
-            websocket.sendMessage({
-              type: 'audio_data',
-              data: Array.from(new Uint8Array(audioData))
-            })
-          }
-        })
-
-        // 通知后端开始 ASR
-        websocket.sendMessage({ type: 'start_asr' })
-      } catch (error) {
-        console.error('录音失败:', error)
-      }
-    }, 400) // 长按 0.4 秒
-
-    setSpaceKeyTimer(timer)
-  }, [isSpaceKeyPressed, audio, websocket])
-
-  const handleSpaceKeyUp = useCallback(async () => {
-    if (!isSpaceKeyPressed) return
-
-    setIsSpaceKeyPressed(false)
-
-    if (spaceKeyTimer) {
-      clearTimeout(spaceKeyTimer)
-      setSpaceKeyTimer(null)
+  // 开始 ASR 录音（通用函数）
+  const startASR = useCallback(async () => {
+    // 如果已经在录音或正在启动，忽略
+    if (audio.isRecording || isASRStarting) {
+      console.log('🎤 ASR已在进行中或正在启动，忽略')
+      return
     }
 
-    if (audio.isRecording) {
-      console.log('🎤 停止录音')
+    try {
+      setIsASRStarting(true)
+      setBestASRText('')
+      console.log('🎤 开始ASR录音')
+      debugger
+
+      await audio.startRecording((audioData) => {
+        if (websocket.isConnected) {
+          debugger
+          const pcm16 = new Int16Array(audioData)
+          const base64String = btoa(String.fromCharCode(...new Uint8Array(pcm16.buffer)))
+          console.log('🎤 发送PCM音频数据块:', base64String.length, 'chars')
+          websocket.sendMessage({
+            type: 'audio_chunk',
+            audio_data: base64String
+          })
+        }
+      })
+
+      websocket.sendMessage({ type: 'start_asr' })
+      debugger
+      console.log('✅ ASR 已启动，已发送 start_asr 消息')
+      setIsASRStarting(false)
+    } catch (error) {
+      console.error('❌ 启动ASR失败:', error)
+      setIsASRStarting(false)
+    }
+  }, [audio, websocket, isASRStarting])
+
+  // 停止 ASR 录音（通用函数）
+  const stopASR = useCallback(async () => {
+    // 如果未在录音且未在启动中，忽略
+    if (!audio.isRecording && !isASRStarting) {
+      console.log('🎤 ASR未在进行中，跳过')
+      return
+    }
+
+    // 如果正在启动，等待启动完成
+    if (isASRStarting) {
+      console.log('🎤 ASR正在启动，等待启动完成...')
+      // 等待最多1秒让ASR启动完成
+      let waitCount = 0
+      while (isASRStarting && waitCount < 10) {
+        await new Promise(resolve => setTimeout(resolve, 100))
+        waitCount++
+      }
+    }
+
+    // 再次检查是否在录音
+    if (!audio.isRecording) {
+      console.log('🎤 ASR未在录音状态，跳过停止')
+      return
+    }
+
+    try {
+      console.log('🎤 停止ASR录音')
       await audio.stopRecording()
 
       // 通知后端停止 ASR
       websocket.sendMessage({ type: 'stop_asr' })
-    }
-  }, [isSpaceKeyPressed, spaceKeyTimer, audio, websocket])
+      console.log('🎤 已发送 stop_asr 消息')
 
-  // 监听键盘事件
-  useEffect(() => {
-    window.addEventListener('keydown', handleSpaceKeyDown)
-    window.addEventListener('keyup', handleSpaceKeyUp)
+      // 等待一小段时间让ASR处理完最后的结果
+      setTimeout(() => {
+        console.log('🎤 检查ASR结果，bestASRText:', bestASRText)
 
-    return () => {
-      window.removeEventListener('keydown', handleSpaceKeyDown)
-      window.removeEventListener('keyup', handleSpaceKeyUp)
+        // 如果有识别结果，自动发送消息
+        if (bestASRText && bestASRText.trim()) {
+          console.log('🎤 ASR完成，发送结果:', bestASRText)
+          setInputValue(bestASRText.trim())
+
+          // 自动发送消息
+          setTimeout(() => {
+            handleSend()
+          }, 100)
+        } else {
+          console.log('🎤 ASR无有效结果')
+        }
+      }, 500) // 等待500ms让ASR完成最后的处理
+    } catch (error) {
+      console.error('❌ 停止ASR失败:', error)
     }
-  }, [handleSpaceKeyDown, handleSpaceKeyUp])
+  }, [audio, websocket, bestASRText, handleSend, isASRStarting])
+
+
+
+  // 麦克风按钮鼠标按下事件
+  const handleMicMouseDown = useCallback(async (e) => {
+    e.preventDefault()
+    console.log('🎤 麦克风按钮按下')
+    await startASR()
+  }, [startASR])
+
+  // 麦克风按钮鼠标松开事件
+  const handleMicMouseUp = useCallback(async (e) => {
+    e.preventDefault()
+    console.log('🎤 麦克风按钮松开')
+    await stopASR()
+  }, [stopASR])
+
+  // 麦克风按钮鼠标离开事件（防止用户拖出按钮）
+  const handleMicMouseLeave = useCallback(async () => {
+    if (audio.isRecording) {
+      console.log('🎤 鼠标离开麦克风按钮，停止录音')
+      await stopASR()
+    }
+  }, [audio.isRecording, stopASR])
+
+
 
   // 监听 ASR 结果
   useEffect(() => {
     const handleASRResult = (data) => {
+      console.log('🎤 收到ASR识别结果:', data.text, '(final:', data.is_final, ')')
+
       if (data.text) {
+        // 实时更新输入框
         setInputValue(data.text)
         audio.setAsrText(data.text)
+
+        // 更新最佳结果（如果当前结果更长或更有意义）
+        if (data.text.trim() && (data.text.length > bestASRText.length || !bestASRText)) {
+          // 过滤掉单独的标点符号
+          if (data.text.trim() !== '。' && data.text.trim() !== '，' &&
+              data.text.trim() !== '？' && data.text.trim() !== '！') {
+            setBestASRText(data.text)
+            console.log('🎤 更新最佳ASR结果:', data.text)
+          }
+        }
       }
     }
 
@@ -126,7 +197,7 @@ export function ChatInput() {
     return () => {
       websocket.off('asr_result', handleASRResult)
     }
-  }, [websocket, audio])
+  }, [websocket, audio, bestASRText])
 
   return (
     <div className="border-t border-gray-200 bg-white">
@@ -135,7 +206,7 @@ export function ChatInput() {
         {audio.isRecording && (
           <div className="mb-3 text-sm text-red-600 flex items-center gap-2">
             <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-            <span>正在录音... (松开空格键结束)</span>
+            <span>正在录音... (松开按钮结束)</span>
           </div>
         )}
 
@@ -157,14 +228,17 @@ export function ChatInput() {
               <Paperclip className="w-5 h-5" />
             </button>
 
-            {/* 麦克风按钮 */}
+            {/* 麦克风按钮 - 按住说话 */}
             <button
-              className={`p-2.5 rounded-lg transition-colors ${
+              onMouseDown={handleMicMouseDown}
+              onMouseUp={handleMicMouseUp}
+              onMouseLeave={handleMicMouseLeave}
+              className={`p-2.5 rounded-lg transition-colors select-none ${
                 audio.isRecording
                   ? 'bg-red-500 text-white animate-pulse'
                   : 'hover:bg-gray-100 text-gray-600'
               }`}
-              title="长按空格键进行语音输入"
+              title="按住说话"
             >
               <Mic className="w-5 h-5" />
             </button>
@@ -186,7 +260,7 @@ export function ChatInput() {
             {/* 提示文字 */}
             {!inputValue && (
               <div className="absolute right-4 bottom-3 text-xs text-gray-400 pointer-events-none">
-                长按空格键语音输入
+                按住麦克风说话
               </div>
             )}
           </div>
