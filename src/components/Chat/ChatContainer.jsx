@@ -46,21 +46,19 @@ export function ChatContainer() {
   return (
     <div className="h-full overflow-y-auto bg-gray-50/30">
       {/*欢迎消息*/}
-      <div className="w-full py-6">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="flex items-start gap-3">
-            {/* AI 头像 */}
-            <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-purple-400/90 to-pink-400/90 flex items-center justify-center text-white text-sm font-medium shadow-sm">
-              AI
-            </div>
+      <div className="w-full p-6">
+        <div className="flex items-start gap-3">
+          {/* AI 头像 */}
+          <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-purple-400/90 to-pink-400/90 flex items-center justify-center text-white text-sm font-medium shadow-sm">
+            AI
+          </div>
 
-            {/* 消息内容 */}
-            <div className="flex-1">
-              <div className="inline-block bg-gray-100/60 rounded-3xl rounded-tl-md px-5 py-3.5 max-w-2xl">
-                <p className="text-gray-700 leading-relaxed text-[15px]">
-                  {getWelcomeMessage()}
-                </p>
-              </div>
+          {/* 消息内容 */}
+          <div className="flex-1">
+            <div className="inline-block bg-gray-100/60 rounded-3xl rounded-tl-md px-5 py-3.5 max-w-2xl">
+              <p className="text-gray-700 leading-relaxed text-[15px]">
+                {getWelcomeMessage()}
+              </p>
             </div>
           </div>
         </div>

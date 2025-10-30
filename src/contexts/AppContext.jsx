@@ -24,6 +24,10 @@ export function AppProvider({ children }) {
   // 搜索状态
   const [isSearching, setIsSearching] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [isSearchEnabled, setIsSearchEnabled] = useState(false)
+
+  // 深度思考状态
+  const [isThinkingEnabled, setIsThinkingEnabled] = useState(false)
 
   // ASR 状态
   const [asrStatus, setAsrStatus] = useState({
@@ -96,20 +100,33 @@ export function AppProvider({ children }) {
       file
     })
 
-    // 发送到后端
-    const success = websocket.sendMessage({
+    // 构建消息对象
+    const messageData = {
       type: 'chat',
-      message: content,
-      user_id: session.userId,
-      file: file ? {
+      content: content,
+      user_id: session.userId
+    }
+
+    // 如果启用了联网搜索，添加搜索查询
+    if (isSearchEnabled) {
+      messageData.search_query = content
+      console.log('🔍 启用联网搜索:', content)
+    }
+
+    // 如果有文件，添加文件信息
+    if (file) {
+      messageData.file = {
         name: file.name,
         type: file.type,
         data: file.data
-      } : null
-    })
+      }
+    }
+
+    // 发送到后端
+    const success = websocket.sendMessage(messageData)
 
     return success
-  }, [websocket, audio, session, addMessage])
+  }, [websocket, audio, session, addMessage, isSearchEnabled])
 
   // 切换语音
   const changeVoice = useCallback((voice) => {
@@ -157,6 +174,26 @@ export function AppProvider({ children }) {
     setIsImmersiveMode(prev => !prev)
   }, [])
 
+  // 切换深度思考模式
+  const toggleThinking = useCallback(() => {
+    const newState = !isThinkingEnabled
+    setIsThinkingEnabled(newState)
+
+    // 发送到后端
+    websocket.sendMessage({
+      type: 'toggle_thinking',
+      enabled: newState
+    })
+
+    console.log('🧠 深度思考模式:', newState ? '开启' : '关闭')
+  }, [websocket, isThinkingEnabled])
+
+  // 切换联网搜索模式
+  const toggleSearch = useCallback(() => {
+    setIsSearchEnabled(prev => !prev)
+    console.log('🔍 联网搜索模式:', !isSearchEnabled ? '开启' : '关闭')
+  }, [isSearchEnabled])
+
   const value = {
     // WebSocket
     websocket,
@@ -189,6 +226,12 @@ export function AppProvider({ children }) {
     setIsSearching,
     searchQuery,
     setSearchQuery,
+    isSearchEnabled,
+    toggleSearch,
+
+    // Thinking
+    isThinkingEnabled,
+    toggleThinking,
 
     // ASR
     asrStatus,

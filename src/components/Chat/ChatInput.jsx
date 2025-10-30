@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Send, Mic, Paperclip } from 'lucide-react'
+import { Send, Mic, Paperclip, Brain, Search } from 'lucide-react'
 import { useApp } from '../../contexts/AppContext'
 
 /**
@@ -10,7 +10,15 @@ import { useApp } from '../../contexts/AppContext'
  * - 右侧: Send Message 按钮
  */
 export function ChatInput() {
-  const { sendChatMessage, audio, websocket } = useApp()
+  const {
+    sendChatMessage,
+    audio,
+    websocket,
+    isThinkingEnabled,
+    toggleThinking,
+    isSearchEnabled,
+    toggleSearch
+  } = useApp()
   const [inputValue, setInputValue] = useState('')
   const [bestASRText, setBestASRText] = useState('')
   const [isASRStarting, setIsASRStarting] = useState(false) // 标记ASR是否正在启动
@@ -200,31 +208,48 @@ export function ChatInput() {
   }, [websocket, audio, bestASRText])
 
   return (
-    <div className="bg-gray-50/50">
-      <div className="max-w-4xl mx-auto px-6 py-6">
-        {/* ASR 状态提示 */}
-        {audio.isRecording && (
-          <div className="mb-4 px-4 py-3 bg-red-50/80 rounded-2xl flex items-center gap-3">
-            <div className="relative flex items-center justify-center">
-              <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
-              <div className="absolute w-4 h-4 bg-red-400 rounded-full animate-ping opacity-75" />
+    <div className="bg-gray-50/50 p-6">
+      {/* 功能状态提示 */}
+      {(isThinkingEnabled || isSearchEnabled) && (
+        <div className="mb-4 flex items-center gap-2">
+          {isThinkingEnabled && (
+            <div className="px-3 py-1.5 bg-purple-50/80 rounded-full flex items-center gap-2">
+              <Brain className="w-3.5 h-3.5 text-purple-600 animate-pulse" />
+              <span className="text-xs font-medium text-purple-700">深度思考已启用</span>
             </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-red-900">正在录音中...</p>
-              <p className="text-xs text-red-600/80 mt-0.5">松开麦克风按钮结束录音</p>
+          )}
+          {isSearchEnabled && (
+            <div className="px-3 py-1.5 bg-blue-50/80 rounded-full flex items-center gap-2">
+              <Search className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
+              <span className="text-xs font-medium text-blue-700">联网搜索已启用</span>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+      )}
 
-        {audio.asrText && !audio.isRecording && (
-          <div className="mb-4 px-4 py-3 bg-green-50/80 rounded-2xl">
-            <p className="text-xs text-green-600/80 font-medium mb-1">识别结果</p>
-            <p className="text-sm text-green-900">{audio.asrText}</p>
+      {/* ASR 状态提示 */}
+      {audio.isRecording && (
+        <div className="mb-4 px-4 py-3 bg-red-50/80 rounded-2xl flex items-center gap-3">
+          <div className="relative flex items-center justify-center">
+            <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
+            <div className="absolute w-4 h-4 bg-red-400 rounded-full animate-ping opacity-75" />
           </div>
-        )}
+          <div className="flex-1">
+            <p className="text-sm font-medium text-red-900">正在录音中...</p>
+            <p className="text-xs text-red-600/80 mt-0.5">松开麦克风按钮结束录音</p>
+          </div>
+        </div>
+      )}
 
-        {/* 主输入区域 - 参考截图设计 */}
-        <div className="relative bg-gray-100/80 rounded-3xl shadow-sm hover:shadow transition-shadow duration-200">
+      {audio.asrText && !audio.isRecording && (
+        <div className="mb-4 px-4 py-3 bg-green-50/80 rounded-2xl">
+          <p className="text-xs text-green-600/80 font-medium mb-1">识别结果</p>
+          <p className="text-sm text-green-900">{audio.asrText}</p>
+        </div>
+      )}
+
+      {/* 主输入区域 - 参考截图设计 */}
+      <div className="relative bg-gray-100/80 rounded-3xl shadow-sm hover:shadow transition-shadow duration-200">
           {/* 文本输入框 */}
           <textarea
             ref={textareaRef}
@@ -265,6 +290,34 @@ export function ChatInput() {
               >
                 <Paperclip className="w-5 h-5" />
               </button>
+
+              {/* 深度思考按钮 */}
+              <button
+                type="button"
+                onClick={toggleThinking}
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+                  isThinkingEnabled
+                    ? 'bg-purple-500 text-white shadow-lg shadow-purple-200/50'
+                    : 'bg-gray-200/80 hover:bg-gray-300/80 text-gray-600'
+                }`}
+                title={isThinkingEnabled ? '深度思考：已开启' : '深度思考：已关闭'}
+              >
+                <Brain className={`w-5 h-5 ${isThinkingEnabled ? 'animate-pulse' : ''}`} />
+              </button>
+
+              {/* 联网搜索按钮 */}
+              <button
+                type="button"
+                onClick={toggleSearch}
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+                  isSearchEnabled
+                    ? 'bg-blue-500 text-white shadow-lg shadow-blue-200/50'
+                    : 'bg-gray-200/80 hover:bg-gray-300/80 text-gray-600'
+                }`}
+                title={isSearchEnabled ? '联网搜索：已开启' : '联网搜索：已关闭'}
+              >
+                <Search className={`w-5 h-5 ${isSearchEnabled ? 'animate-pulse' : ''}`} />
+              </button>
             </div>
 
             {/* 右侧发送按钮 */}
@@ -283,17 +336,6 @@ export function ChatInput() {
             </button>
           </div>
         </div>
-
-        {/* 底部免责声明 */}
-        <div className="mt-3 text-center">
-          <p className="text-xs text-gray-500/80 flex items-center justify-center gap-1.5">
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            AI can make mistakes, use with caution.
-          </p>
-        </div>
-      </div>
     </div>
   )
 }

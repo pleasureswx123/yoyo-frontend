@@ -295,6 +295,17 @@ function AppContent() {
       toast.error(`搜索失败: ${data.error}`)
     }
 
+    // 处理深度思考状态
+    const handleThinkingToggled = (data) => {
+      console.log('🧠 深度思考模式:', data.enabled ? '已开启' : '已关闭')
+      toast.success(data.enabled ? '深度思考模式已开启' : '深度思考模式已关闭')
+    }
+
+    const handleThinkingError = (data) => {
+      console.error('❌ 深度思考切换失败:', data.error)
+      toast.error(`深度思考切换失败: ${data.error}`)
+    }
+
     // 处理音色切换成功/失败
     const handleVoiceChangeSuccess = (data) => {
       console.log('🎵 音色切换成功:', data.voice)
@@ -368,6 +379,8 @@ function AppContent() {
     websocket.on('search_start', handleSearchStart)
     websocket.on('search_complete', handleSearchComplete)
     websocket.on('search_error', handleSearchError)
+    websocket.on('thinking_toggled', handleThinkingToggled)
+    websocket.on('thinking_error', handleThinkingError)
     websocket.on('voice_change_success', handleVoiceChangeSuccess)
     websocket.on('voice_change_error', handleVoiceChangeError)
     websocket.on('speed_change_success', handleSpeedChangeSuccess)
@@ -396,6 +409,8 @@ function AppContent() {
       websocket.off('search_start', handleSearchStart)
       websocket.off('search_complete', handleSearchComplete)
       websocket.off('search_error', handleSearchError)
+      websocket.off('thinking_toggled', handleThinkingToggled)
+      websocket.off('thinking_error', handleThinkingError)
       websocket.off('voice_change_success', handleVoiceChangeSuccess)
       websocket.off('voice_change_error', handleVoiceChangeError)
       websocket.off('speed_change_success', handleSpeedChangeSuccess)
