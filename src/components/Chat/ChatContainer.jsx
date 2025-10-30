@@ -45,7 +45,7 @@ export function ChatContainer() {
   }
 
   return (
-    <div className="h-full overflow-y-auto bg-gray-50/30">
+    <div className="h-full overflow-y-auto bg-gray-50/30 shadow">
       {/*欢迎消息*/}
       <div className="w-full p-6">
         <div className="flex items-start gap-3">

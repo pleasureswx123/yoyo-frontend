@@ -12,7 +12,7 @@ class Live2DService {
     this.isInitialized = false
     this.expressions = []
     this.motions = []
-    
+
     // 模型路径候选列表
     this.modelPaths = [
       '/models/youyou/youyou.model3.json',
@@ -26,6 +26,9 @@ class Live2DService {
    * @param {HTMLElement} container - 容器元素
    */
   async initialize(container) {
+    this.offsetWidth = container.offsetWidth;
+    this.offsetHeight = container.offsetHeight;
+
     if (this.isInitialized) {
       console.warn('Live2D 已经初始化')
       return
@@ -37,28 +40,28 @@ class Live2DService {
     try {
       // 创建 PIXI 应用
       this.createApp()
-      
+
       // 加载模型
       this.model = await this.loadFirstAvailableModel()
-      
+
       // 设置模型位置和缩放
       this.fitAndPlace(this.model)
-      
+
       // 添加到舞台
       this.app.stage.addChild(this.model)
-      
+
       // 提取动作和表情列表
       this.extractControls(this.model)
-      
+
       // 暴露到全局供口型同步使用
       window.live2dModel = this.model
       window.currentlive2dModel = this.model
-      
+
       this.isInitialized = true
       console.log('✅ Live2D 初始化完成!')
       console.log('📊 可用动作:', this.motions.length)
       console.log('😊 可用表情:', this.expressions.length)
-      
+
       return this.model
     } catch (error) {
       console.error('❌ Live2D 初始化失败:', error)
@@ -77,8 +80,8 @@ class Live2DService {
     const resolution = window.devicePixelRatio || 1
 
     this.app = new window.PIXI.Application({
-      width: 500,
-      height: 500,
+      width: this.offsetWidth,
+      height: this.offsetHeight,
       backgroundAlpha: 0,
       antialias: true,
       resolution: resolution,
@@ -118,13 +121,23 @@ class Live2DService {
    * 设置模型位置和缩放
    */
   fitAndPlace(model) {
-    const targetW = 500
-    const targetH = 500
-    const scale = Math.min(targetW / model.width, targetH / model.height) * 1.05
-    
-    model.scale.set(scale)
-    model.anchor.set(0.5, 1.0)
-    model.position.set(targetW / 2, targetH - 2)
+    const canvas = this.app.view;
+    const internalWidth = canvas.width;
+    const internalHeight = canvas.height;
+
+    const bounds = model.getLocalBounds();
+    const modelWidth = bounds.width;
+    const modelHeight = bounds.height;
+
+    const scaleX = internalWidth / modelWidth;
+    const scaleY = internalHeight / modelHeight;
+    const scale = Math.min(scaleX, scaleY);
+
+    const resolution = window.devicePixelRatio || 1
+
+    model.scale.set(scale / resolution );
+    model.anchor.set(0.5, 0.5);
+    model.position.set(internalWidth / (2 * resolution), internalHeight / (2 * resolution));
   }
 
   /**
@@ -162,7 +175,7 @@ class Live2DService {
       console.error('❌ 模型未加载')
       return
     }
-    
+
     console.log('🎬 播放动作:', group, index)
     this.model.motion(group, index)
   }
@@ -176,7 +189,7 @@ class Live2DService {
       console.error('❌ 模型未加载')
       return
     }
-    
+
     console.log('😊 播放表情:', expressionId)
     this.model.expression(expressionId)
   }
@@ -222,12 +235,12 @@ class Live2DService {
       this.app.destroy(true, { children: true })
       this.app = null
     }
-    
+
     this.model = null
     this.isInitialized = false
     window.live2dModel = null
     window.currentlive2dModel = null
-    
+
     console.log('🗑️ Live2D 已销毁')
   }
 }

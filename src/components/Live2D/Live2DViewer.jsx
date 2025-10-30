@@ -19,9 +19,9 @@ export function Live2DViewer() {
       try {
         setIsLoading(true)
         setError(null)
-        
+
         await live2dService.initialize(containerRef.current)
-        
+
         if (mounted) {
           setIsInitialized(true)
           setIsLoading(false)
@@ -41,7 +41,7 @@ export function Live2DViewer() {
     return () => {
       mounted = false
       clearTimeout(timer)
-      
+
       // 组件卸载时销毁 Live2D
       if (isInitialized) {
         live2dService.destroy()

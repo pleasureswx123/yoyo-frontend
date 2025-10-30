@@ -243,7 +243,7 @@ export function ChatInput() {
   }, [websocket, audio, bestASRText])
 
   return (
-    <div className="bg-gray-50/50 p-6">
+    <div className="bg-gray-50/50 p-4">
       {/* 功能状态提示 */}
       {(isThinkingEnabled || isSearchEnabled) && (
         <div className="mb-4 flex items-center gap-2">
@@ -320,7 +320,7 @@ export function ChatInput() {
         </div>
       )}
 
-      {/* 主输入区域 - 参考截图设计 */}
+      {/* 主输入区域 */}
       <div className="relative bg-gray-100/80 rounded-3xl shadow-sm hover:shadow transition-shadow duration-200">
           {/* 文本输入框 */}
           <textarea

@@ -500,12 +500,13 @@ function AppContent() {
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="bg-white rounded-2xl shadow-lg"
+              className="w-full h-full rounded-2xl shadow-lg bg-gradient-to-br from-blue-50 to-purple-50 overflow-hidden"
             >
+              <Live2DViewer />
               {/*<h3 className="text-lg font-semibold mb-4">数字人预览</h3>*/}
-              <div className="aspect-square bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl overflow-hidden">
-                <Live2DViewer />
-              </div>
+              {/*<div className="aspect-square aspect-[9/13] bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl overflow-hidden">*/}
+              {/*  <Live2DViewer />*/}
+              {/*</div>*/}
             </motion.div>
 
             {/*/!* User Info *!/*/}
