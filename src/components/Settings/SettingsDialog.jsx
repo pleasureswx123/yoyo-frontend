@@ -251,261 +251,272 @@ export function SettingsDialog({ isOpen, onClose }) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: -20 }}
           transition={{ duration: 0.3, ease: 'easeOut' }}
-          className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+          className="bg-white rounded-3xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col"
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-100/50">
-            <h2 className="text-xl font-semibold text-gray-800">设置</h2>
-            <button
-              onClick={onClose}
-              className="w-10 h-10 rounded-full hover:bg-gray-100/60 flex items-center justify-center transition-all duration-200"
-            >
-              <X className="w-5 h-5 text-gray-600" />
-            </button>
+          <div className="px-6 py-5 border-b border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">设置</h2>
+                <p className="text-sm text-gray-500 mt-1">调整您的偏好设置</p>
+              </div>
+              <button
+                onClick={onClose}
+                className="w-9 h-9 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
           </div>
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* 音色选择器 */}
-              <div className="bg-gradient-to-br from-blue-50/50 to-purple-50/50 rounded-2xl p-6 border border-blue-100/50">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400/90 to-cyan-400/90 flex items-center justify-center shadow-sm">
-                    <Volume2 className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-800">音色选择</h3>
-                </div>
+            <div className="space-y-6">
+              {/* 音色设置 */}
+              <div className="bg-gray-100/80 rounded-2xl p-5">
+                <h3 className="text-base font-medium text-gray-900 mb-4">音色设置</h3>
 
-                <select
-                  value={currentVoice}
-                  onChange={(e) => handleVoiceChange(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/80 rounded-2xl border border-gray-200/80 focus:border-blue-300 focus:bg-white focus:outline-none transition-all mb-3"
-                >
-                  {voiceOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-
-                <div className="text-sm text-gray-600/80 mb-4">
-                  当前: {voiceOptions.find(v => v.value === currentVoice)?.label}
-                </div>
-
-                {/* 语速调节 */}
-                <div className="mt-4 pt-4 border-t border-blue-100/50">
-                  <div className="text-sm font-medium text-gray-700 mb-2">语速调节</div>
-                  <input
-                    type="range"
-                    min="0.5"
-                    max="2.0"
-                    step="0.1"
-                    value={currentSpeed}
-                    onChange={(e) => handleSpeedChange(parseFloat(e.target.value))}
-                    className="w-full h-2 bg-blue-200/60 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500/80 mt-1">
-                    <span>慢</span>
-                    <span>正常</span>
-                    <span>快</span>
-                  </div>
-                  <div className="text-sm text-gray-600/80 mt-2">
-                    当前: {currentSpeed}x
-                  </div>
-                </div>
-              </div>
-
-              {/* 提示词模式显示器 */}
-              <div className="bg-gradient-to-br from-purple-50/50 to-pink-50/50 rounded-2xl p-6 border border-purple-100/50">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400/90 to-pink-400/90 flex items-center justify-center shadow-sm">
-                    <MessageSquare className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-800">提示词模式</h3>
-                </div>
-
-                <div className="bg-white/80 rounded-2xl p-4 mb-4">
-                  <div className="text-lg font-medium text-purple-600">
-                    模式 {currentPromptMode}: {promptModeInfo[currentPromptMode]?.name}
-                  </div>
-                  <div className="text-sm text-gray-600/80 mt-1">
-                    {promptModeInfo[currentPromptMode]?.description}
-                  </div>
-                </div>
-
-                <div className="text-sm text-gray-600/80 mb-3">
-                  使用键盘 0-5 快速切换模式：
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  {Object.entries(promptModeInfo).map(([mode, info]) => (
-                    <button
-                      key={mode}
-                      onClick={() => handlePromptModeChange(parseInt(mode))}
-                      className={`px-3 py-2 rounded-2xl text-sm font-medium transition-all duration-200 ${
-                        currentPromptMode === parseInt(mode)
-                          ? 'bg-gradient-to-r from-purple-400 to-pink-400 text-white shadow-sm'
-                          : 'bg-white/80 text-gray-700 hover:bg-purple-100/60'
-                      }`}
+                <div className="space-y-4">
+                  {/* 音色选择 */}
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 w-32 flex-shrink-0">
+                      <Volume2 className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm text-gray-700">音色</span>
+                    </div>
+                    <select
+                      value={currentVoice}
+                      onChange={(e) => handleVoiceChange(e.target.value)}
+                      className="flex-1 px-4 py-2.5 bg-white rounded-xl border border-gray-200 text-sm text-gray-900 focus:border-gray-400 focus:outline-none transition-colors"
                     >
-                      {mode}: {info.description}
-                    </button>
-                  ))}
+                      {voiceOptions.map(option => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* 语速调节 */}
+                  <div className="flex items-start gap-4">
+                    <div className="flex items-center gap-2 w-32 flex-shrink-0 pt-2">
+                      <Activity className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm text-gray-700">语速</span>
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        type="range"
+                        min="0.5"
+                        max="2.0"
+                        step="0.1"
+                        value={currentSpeed}
+                        onChange={(e) => handleSpeedChange(parseFloat(e.target.value))}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                      />
+                      <div className="flex justify-between text-xs text-gray-500 mt-2">
+                        <span>0.5x</span>
+                        <span className="font-medium text-gray-700">{currentSpeed}x</span>
+                        <span>2.0x</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* 情感状态选择器 */}
-              <div className="bg-gradient-to-br from-pink-50/50 to-red-50/50 rounded-2xl p-6 border border-pink-100/50">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400/90 to-red-400/90 flex items-center justify-center shadow-sm">
-                    <Heart className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-800">当前情感</h3>
-                </div>
+              {/* 提示词模式 */}
+              <div className="bg-gray-100/80 rounded-2xl p-5">
+                <h3 className="text-base font-medium text-gray-900 mb-4">提示词模式</h3>
 
-                <div className="bg-white/80 rounded-2xl p-4 mb-4">
-                  <div className="text-2xl font-semibold text-pink-600 mb-1">
-                    {currentEmotion}
-                  </div>
-                  <div className="text-sm text-gray-600/80">
-                    {emotionDescriptions[currentEmotion] || '未知'}
-                  </div>
-                </div>
-
-                <div className="text-sm text-gray-600/80 mb-2">最近情感变化：</div>
-                <div className="space-y-2">
-                  {emotionHistory.length > 0 ? (
-                    emotionHistory.map((item, index) => (
-                      <div key={index} className="flex items-center justify-between text-sm bg-white/80 rounded-2xl px-3 py-2">
-                        <span className="font-medium text-gray-700">
-                          {emotionDescriptions[item.emotion] || item.emotion}
-                        </span>
-                        <span className="text-gray-500/80 text-xs">
-                          {item.time.toLocaleTimeString()}
-                        </span>
+                <div className="space-y-4">
+                  {/* 当前模式显示 */}
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 w-32 flex-shrink-0">
+                      <MessageSquare className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm text-gray-700">当前模式</span>
+                    </div>
+                    <div className="flex-1 px-4 py-2.5 bg-white rounded-xl border border-gray-200">
+                      <div className="text-sm font-medium text-gray-900">
+                        模式 {currentPromptMode}: {promptModeInfo[currentPromptMode]?.description}
                       </div>
-                    ))
-                  ) : (
-                    <div className="text-sm text-gray-400/80 text-center py-4">
-                      暂无情感变化记录
+                    </div>
+                  </div>
+
+                  {/* 模式切换按钮 */}
+                  <div className="pt-2">
+                    <div className="text-xs text-gray-500 mb-3">快速切换 (键盘 0-5):</div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {Object.entries(promptModeInfo).map(([mode, info]) => (
+                        <button
+                          key={mode}
+                          onClick={() => handlePromptModeChange(parseInt(mode))}
+                          className={`px-3 py-2 rounded-xl text-xs font-medium transition-colors ${
+                            currentPromptMode === parseInt(mode)
+                              ? 'bg-gray-600 text-white'
+                              : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                          }`}
+                        >
+                          {mode}: {info.description}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 情感状态 */}
+              <div className="bg-gray-100/80 rounded-2xl p-5">
+                <h3 className="text-base font-medium text-gray-900 mb-4">情感状态</h3>
+
+                <div className="space-y-4">
+                  {/* 当前情感 */}
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 w-32 flex-shrink-0">
+                      <Heart className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm text-gray-700">当前情感</span>
+                    </div>
+                    <div className="flex-1 px-4 py-2.5 bg-white rounded-xl border border-gray-200">
+                      <span className="text-sm font-medium text-gray-900">
+                        {emotionDescriptions[currentEmotion] || currentEmotion}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* 情感历史 */}
+                  {emotionHistory.length > 0 && (
+                    <div className="pt-2">
+                      <div className="text-xs text-gray-500 mb-2">最近变化:</div>
+                      <div className="space-y-1.5">
+                        {emotionHistory.slice(0, 3).map((item, index) => (
+                          <div key={index} className="flex items-center justify-between px-3 py-2 bg-white rounded-lg text-xs">
+                            <span className="text-gray-700">
+                              {emotionDescriptions[item.emotion] || item.emotion}
+                            </span>
+                            <span className="text-gray-400">
+                              {item.time.toLocaleTimeString()}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* 沉默时间设置 */}
-              <div className="bg-gradient-to-br from-orange-50/50 to-yellow-50/50 rounded-2xl p-6 border border-orange-100/50">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400/90 to-yellow-400/90 flex items-center justify-center shadow-sm">
-                    <MessageSquare className="w-5 h-5 text-white" />
+              {/* 智能对话设置 */}
+              <div className="bg-gray-100/80 rounded-2xl p-5">
+                <h3 className="text-base font-medium text-gray-900 mb-4">智能主动对话</h3>
+
+                <div className="space-y-4">
+                  {/* 沉默触发时间 */}
+                  <div className="flex items-start gap-4">
+                    <div className="flex items-center gap-2 w-32 flex-shrink-0 pt-2">
+                      <MessageSquare className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm text-gray-700">触发时间</span>
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        type="range"
+                        min="5"
+                        max="120"
+                        step="5"
+                        value={silenceTimeout}
+                        onChange={(e) => setSilenceTimeout(parseInt(e.target.value))}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                      />
+                      <div className="flex justify-between text-xs text-gray-500 mt-2">
+                        <span>5秒</span>
+                        <span className="font-medium text-gray-700">{silenceTimeout}秒</span>
+                        <span>120秒</span>
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-800">智能主动对话</h3>
-                </div>
 
-                <div className="text-sm text-gray-600/80 mb-4">
-                  AI会在初始化和沉默时自动开启对话
-                </div>
-
-                <div className="bg-white/80 rounded-2xl p-4 mb-4">
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">
-                    沉默触发时间: <span className="text-orange-600 font-semibold">{silenceTimeout}</span> 秒
-                  </label>
-                  <input
-                    type="range"
-                    min="5"
-                    max="120"
-                    step="5"
-                    value={silenceTimeout}
-                    onChange={(e) => setSilenceTimeout(parseInt(e.target.value))}
-                    className="w-full h-2 bg-orange-200/60 rounded-lg appearance-none cursor-pointer mb-3"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500/80 mb-3">
-                    <span>5秒</span>
-                    <span>60秒</span>
-                    <span>120秒</span>
+                  {/* 应用按钮 */}
+                  <div className="flex items-center gap-4">
+                    <div className="w-32 flex-shrink-0"></div>
+                    <button
+                      onClick={handleApplySilenceTimeout}
+                      disabled={isSavingSilence}
+                      className="flex-1 px-4 py-2.5 bg-gray-600 hover:bg-gray-800 disabled:bg-gray-300 text-white text-sm font-medium rounded-xl transition-colors disabled:cursor-not-allowed"
+                    >
+                      {isSavingSilence ? '保存中...' : '应用设置'}
+                    </button>
                   </div>
-                  <button
-                    onClick={handleApplySilenceTimeout}
-                    disabled={isSavingSilence}
-                    className="w-full px-4 py-2 bg-gradient-to-r from-orange-400 to-yellow-400 hover:from-orange-500 hover:to-yellow-500 text-white rounded-2xl transition-all duration-200 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed shadow-sm"
-                  >
-                    {isSavingSilence ? '保存中...' : '应用设置'}
-                  </button>
-                </div>
 
-                <div className="bg-white/80 rounded-2xl px-4 py-3 text-sm text-gray-600/80">
-                  智能对话: 已启用 ({silenceTimeout}秒触发)
+                  {/* 说明文字 */}
+                  <div className="flex items-start gap-4">
+                    <div className="w-32 flex-shrink-0"></div>
+                    <p className="flex-1 text-xs text-gray-500">
+                      AI 会在初始化和沉默 {silenceTimeout} 秒后自动开启对话
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* 性能监测面板 */}
-              <div className="bg-gradient-to-br from-green-50/50 to-teal-50/50 rounded-2xl p-6 border border-green-100/50">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400/90 to-teal-400/90 flex items-center justify-center shadow-sm">
-                    <Activity className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-800">⚡ 性能监测</h3>
-                </div>
+              {/* 性能监测 */}
+              <div className="bg-gray-100/80 rounded-2xl p-5">
+                <h3 className="text-base font-medium text-gray-900 mb-4">性能监测</h3>
 
                 <div className="space-y-3">
                   {/* LLM首字响应 */}
-                  <div className="bg-white/80 rounded-2xl p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-gray-700">LLM首字响应</span>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 w-32 flex-shrink-0">
+                      <Activity className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm text-gray-700">LLM响应</span>
+                    </div>
+                    <div className="flex-1 flex items-center justify-between px-4 py-2.5 bg-white rounded-xl border border-gray-200">
+                      <span className="text-sm font-medium text-gray-900">
+                        {performanceMetrics.llmFirstTokenTime}
+                      </span>
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         performanceMetrics.llmStatus === '已完成'
-                          ? 'bg-green-100/80 text-green-700'
-                          : 'bg-gray-100/80 text-gray-600'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-gray-100 text-gray-600'
                       }`}>
                         {performanceMetrics.llmStatus}
                       </span>
                     </div>
-                    <div className="text-lg font-semibold text-green-600">
-                      {performanceMetrics.llmFirstTokenTime}
-                    </div>
                   </div>
 
                   {/* TTS首包回复 */}
-                  <div className="bg-white/80 rounded-2xl p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-gray-700">TTS首包回复</span>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 w-32 flex-shrink-0">
+                      <Volume2 className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm text-gray-700">TTS首包</span>
+                    </div>
+                    <div className="flex-1 flex items-center justify-between px-4 py-2.5 bg-white rounded-xl border border-gray-200">
+                      <span className="text-sm font-medium text-gray-900">
+                        {performanceMetrics.ttsFirstPacketTime}
+                      </span>
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         performanceMetrics.ttsStatus === '已完成'
-                          ? 'bg-green-100/80 text-green-700'
-                          : 'bg-gray-100/80 text-gray-600'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-gray-100 text-gray-600'
                       }`}>
                         {performanceMetrics.ttsStatus}
                       </span>
                     </div>
-                    <div className="text-lg font-semibold text-green-600">
-                      {performanceMetrics.ttsFirstPacketTime}
-                    </div>
                   </div>
 
                   {/* 端到端延迟 */}
-                  <div className="bg-white/80 rounded-2xl p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-gray-700">端到端延迟</span>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 w-32 flex-shrink-0">
+                      <Activity className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm text-gray-700">端到端</span>
+                    </div>
+                    <div className="flex-1 flex items-center justify-between px-4 py-2.5 bg-white rounded-xl border border-gray-200">
+                      <span className="text-sm font-medium text-gray-900">
+                        {performanceMetrics.endToEndTime}
+                      </span>
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         performanceMetrics.e2eStatus === '已完成'
-                          ? 'bg-green-100/80 text-green-700'
-                          : 'bg-gray-100/80 text-gray-600'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-gray-100 text-gray-600'
                       }`}>
                         {performanceMetrics.e2eStatus}
                       </span>
                     </div>
-                    <div className="text-lg font-semibold text-green-600">
-                      {performanceMetrics.endToEndTime}
-                    </div>
                   </div>
                 </div>
-
-                {/*<button
-                  onClick={handleResetPerformance}
-                  className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-green-400 to-teal-400 hover:from-green-500 hover:to-teal-500 text-white font-medium rounded-2xl transition-all duration-200 shadow-sm"
-                >
-                  🔄 重置统计
-                </button>*/}
               </div>
             </div>
           </div>
