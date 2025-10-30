@@ -166,11 +166,11 @@ class SessionService {
       if (response.ok) {
         const data = await response.json()
         console.log('✅ 会话同步成功:', data)
-        
+
         // 更新同步时间
         this.session.last_sync_time = new Date().toISOString()
         this.saveToStorage()
-        
+
         return data
       } else {
         console.error('❌ 会话同步失败:', response.status)
@@ -186,7 +186,7 @@ class SessionService {
   async fetchProfile(userId) {
     try {
       const response = await fetch(`http://localhost:8000/api/user/profile/${userId}`)
-      
+
       if (response.ok) {
         const data = await response.json()
         console.log('✅ 用户档案获取成功:', data)
@@ -225,7 +225,7 @@ class SessionService {
    */
   async getActiveUsers() {
     try {
-      const response = await fetch('http://localhost:8000/memory/users/active')
+      const response = await fetch('/memory/users/active')
 
       if (response.ok) {
         const data = await response.json()
@@ -249,13 +249,13 @@ class SessionService {
     try {
       // 获取用户档案
       const profile = await this.fetchProfile(userId)
-      
+
       // 创建会话
       this.createSession(userId, userName, profile)
-      
+
       // 同步到服务器
       await this.syncToServer()
-      
+
       return this.session
     } catch (error) {
       console.error('❌ 登录失败:', error)
