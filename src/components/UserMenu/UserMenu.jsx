@@ -50,14 +50,14 @@ export function UserMenu() {
       {/* 用户头像按钮 */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        className="relative p-1.5 hover:bg-white/60 rounded-full transition-all duration-200"
         title={session.userName}
       >
-        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+        <div className="w-9 h-9 bg-gradient-to-br from-blue-400/90 to-cyan-400/90 rounded-full flex items-center justify-center text-white font-medium text-sm shadow-sm">
           {getInitial()}
         </div>
         {/* 在线状态指示器 */}
-        <div className="absolute bottom-2 right-2 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
+        <div className="absolute bottom-1 right-1 w-2.5 h-2.5 bg-green-500 border-2 border-gray-50 rounded-full animate-pulse" />
       </button>
 
       {/* 下拉菜单 */}
@@ -67,27 +67,27 @@ export function UserMenu() {
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: 0.15 }}
-            className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50"
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="absolute right-0 mt-2 w-72 bg-white/95 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-100/50 overflow-hidden z-50"
           >
             {/* 用户信息头部 */}
-            <div className="p-6 bg-gradient-to-br from-blue-50 to-purple-50">
-              <div className="flex items-center gap-4">
+            <div className="p-5 bg-gradient-to-br from-gray-50/80 to-gray-100/50">
+              <div className="flex items-center gap-3">
                 {/* 头像 */}
                 <div className="relative">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-lg">
+                  <div className="w-14 h-14 bg-gradient-to-br from-blue-400/90 to-cyan-400/90 rounded-full flex items-center justify-center text-white font-semibold text-xl shadow-sm">
                     {getInitial()}
                   </div>
                   {/* 在线状态 */}
-                  <div className="absolute bottom-0 right-0 w-5 h-5 bg-green-500 border-4 border-white rounded-full" />
+                  <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-3 border-white rounded-full" />
                 </div>
 
                 {/* 用户信息 */}
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-900">
+                  <h3 className="text-lg font-semibold text-gray-800">
                     {session.userName || '未知用户'}
                   </h3>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-xs text-gray-500/80 mt-0.5">
                     {session.profile?.conversation_stage === 'greeting' && '初次见面'}
                     {session.profile?.conversation_stage === 'getting_to_know' && '逐渐熟悉'}
                     {session.profile?.conversation_stage === 'familiar' && '已经熟悉'}
@@ -99,10 +99,10 @@ export function UserMenu() {
             </div>
 
             {/* 分割线 */}
-            <div className="h-px bg-gray-100" />
+            <div className="h-px bg-gray-100/50" />
 
             {/* 菜单项 */}
-            <div className="p-2">
+            <div className="p-2.5">
               {/* 对话统计 */}
               {/*<div className="px-4 py-3 mb-1">*/}
               {/*  <div className="flex items-center justify-between text-sm">*/}
@@ -122,10 +122,10 @@ export function UserMenu() {
                   setIsOpen(false)
                   setShowSettings(true)
                 }}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg transition-colors text-left"
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-gray-100/60 rounded-2xl transition-all duration-200 text-left"
               >
-                <Settings className="w-5 h-5 text-gray-600" />
-                <span className="text-gray-900 font-medium">设置</span>
+                <Settings className="w-4.5 h-4.5 text-gray-600" />
+                <span className="text-gray-700 font-medium text-sm">设置</span>
               </button>
 
               {/* 用户档案 */}
@@ -135,11 +135,11 @@ export function UserMenu() {
                   // TODO: 打开用户档案
                   console.log('打开用户档案')
                 }}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg transition-colors text-left"
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-gray-100/60 rounded-2xl transition-all duration-200 text-left"
               >
-                <FileText className="w-5 h-5 text-gray-600" />
+                <FileText className="w-4.5 h-4.5 text-gray-600" />
                 <div className="flex-1 flex items-center justify-between">
-                  <span className="text-gray-900 font-medium">我的档案</span>
+                  <span className="text-gray-700 font-medium text-sm">我的档案</span>
                   <ExternalLink className="w-4 h-4 text-gray-400" />
                 </div>
               </button>*/}
@@ -150,24 +150,24 @@ export function UserMenu() {
                   setIsOpen(false)
                   setShowSwitchUser(true)
                 }}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg transition-colors text-left"
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-gray-100/60 rounded-2xl transition-all duration-200 text-left"
               >
-                <Users className="w-5 h-5 text-gray-600" />
-                <span className="text-gray-900 font-medium">切换用户</span>
+                <Users className="w-4.5 h-4.5 text-gray-600" />
+                <span className="text-gray-700 font-medium text-sm">切换用户</span>
               </button>
             </div>
 
             {/* 分割线 */}
-            <div className="h-px bg-gray-100 mx-2" />
+            <div className="h-px bg-gray-100/50 mx-2.5" />
 
             {/* 登出 */}
-            <div className="p-2">
+            <div className="p-2.5">
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 rounded-lg transition-colors text-left group"
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-red-50/80 rounded-2xl transition-all duration-200 text-left group"
               >
-                <LogOut className="w-5 h-5 text-gray-600 group-hover:text-red-600 transition-colors" />
-                <span className="text-gray-900 font-medium group-hover:text-red-600 transition-colors">
+                <LogOut className="w-4.5 h-4.5 text-gray-600 group-hover:text-red-500 transition-colors" />
+                <span className="text-gray-700 font-medium text-sm group-hover:text-red-500 transition-colors">
                   登出
                 </span>
               </button>

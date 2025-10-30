@@ -428,22 +428,22 @@ function AppContent() {
       />
 
       {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-[1]">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="border-b border-gray-100/50 bg-gray-50/80 backdrop-blur-sm sticky top-0 z-[1]">
+        <div className="container mx-auto px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
-              <MessageCircle className="w-6 h-6 text-white" />
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-400/90 to-pink-400/90 flex items-center justify-center shadow-sm">
+              <MessageCircle className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">悠悠</h1>
-              <p className="text-sm text-gray-500">AI情感陪伴数字人智能对话系统</p>
+              <h1 className="text-lg font-semibold text-gray-800">悠悠</h1>
+              <p className="text-xs text-gray-500/80">AI情感陪伴数字人智能对话系统</p>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${websocket.isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-              <span className="text-sm text-gray-600">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/60 rounded-full">
+              <div className={`w-2 h-2 rounded-full ${websocket.isConnected ? 'bg-green-500' : 'bg-red-400'} ${websocket.isConnected ? 'animate-pulse' : ''}`} />
+              <span className="text-xs text-gray-600 font-medium">
                 {websocket.isConnected ? '已连接' : '未连接'}
               </span>
             </div>
@@ -453,10 +453,10 @@ function AppContent() {
             ) : (
               <button
                 onClick={() => setShowLogin(true)}
-                className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg"
+                className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400/90 to-cyan-400/90 hover:from-blue-500/90 hover:to-cyan-500/90 flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md"
                 title="登录"
               >
-                <LogIn className="w-5 h-5 text-white" />
+                <LogIn className="w-4.5 h-4.5 text-white" />
               </button>
             )}
           </div>
