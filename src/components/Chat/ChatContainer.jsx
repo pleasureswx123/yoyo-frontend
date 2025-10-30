@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
+import { FileText } from 'lucide-react'
 import { useApp } from '../../contexts/AppContext'
 
 /**
@@ -83,12 +84,36 @@ export function ChatContainer() {
                   /* 用户消息 - 右侧 */
                   <div className="flex items-start gap-3 justify-end">
                     {/* 消息内容 */}
-                    <div className="flex-1 flex justify-end">
-                      <div className="inline-block bg-gray-100/60 text-gray-700 rounded-3xl rounded-tr-md px-4 py-2.5 max-w-2xl shadow-sm">
-                        <p className="leading-relaxed text-[15px]">
-                          {formatMessage(message.content)}
-                        </p>
-                      </div>
+                    <div className="flex-1 flex flex-col items-end gap-2">
+                      {/* 附件预览 */}
+                      {message.file && (
+                        <div className="max-w-xs">
+                          {message.file.type?.startsWith('image/') ? (
+                            <img
+                              src={URL.createObjectURL(message.file)}
+                              alt="上传的图片"
+                              className="rounded-2xl max-w-full h-auto shadow-sm"
+                            />
+                          ) : (
+                            <div className="bg-gray-100/80 rounded-2xl px-4 py-3 flex items-center gap-3">
+                              <FileText className="w-5 h-5 text-gray-500" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-700 truncate">{message.file.name}</p>
+                                <p className="text-xs text-gray-500">{(message.file.size / 1024).toFixed(1)} KB</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* 文本消息 */}
+                      {message.content && (
+                        <div className="inline-block bg-gray-100/60 text-gray-700 rounded-3xl rounded-tr-md px-4 py-2.5 max-w-2xl shadow-sm">
+                          <p className="leading-relaxed text-[15px]">
+                            {formatMessage(message.content)}
+                          </p>
+                        </div>
+                      )}
                     </div>
 
                     {/* 用户头像 */}

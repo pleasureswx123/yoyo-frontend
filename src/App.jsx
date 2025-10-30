@@ -427,6 +427,7 @@ function AppContent() {
 
   return (
     <div className="min-h-dvh w-full bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    {/* <div className="bg-[url('/images/noise.png')]  min-h-dvh w-full">*/}
       {/* Toast Notifications */}
       <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
 
@@ -443,7 +444,7 @@ function AppContent() {
       />
 
       {/* Header */}
-      <header className="border-b border-gray-100/50 bg-gray-50/80 backdrop-blur-sm sticky top-0 z-[1]">
+      <header className="border-b border-[#ececec] rounded-3xl shadow-lg sticky top-0 z-[1]">
         <div className="container mx-auto px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-400/90 to-pink-400/90 flex items-center justify-center shadow-sm">

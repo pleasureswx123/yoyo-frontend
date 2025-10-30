@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Send, Mic, Paperclip, Brain, Search } from 'lucide-react'
+import { Send, Mic, Paperclip, Brain, Search, X, Image as ImageIcon, File as FileIcon } from 'lucide-react'
 import { useApp } from '../../contexts/AppContext'
 
 /**
@@ -17,20 +17,55 @@ export function ChatInput() {
     isThinkingEnabled,
     toggleThinking,
     isSearchEnabled,
-    toggleSearch
+    toggleSearch,
+    currentFile,
+    setCurrentFile,
+    isUploading
   } = useApp()
   const [inputValue, setInputValue] = useState('')
   const [bestASRText, setBestASRText] = useState('')
   const [isASRStarting, setIsASRStarting] = useState(false) // 标记ASR是否正在启动
+  const [filePreviewUrl, setFilePreviewUrl] = useState(null)
   const textareaRef = useRef(null)
   const inputRef = useRef(null)
+  const fileInputRef = useRef(null)
+
+  // 处理文件选择
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setCurrentFile(file)
+
+      // 如果是图片，创建预览URL
+      if (file.type.startsWith('image/')) {
+        const url = URL.createObjectURL(file)
+        setFilePreviewUrl(url)
+      } else {
+        setFilePreviewUrl(null)
+      }
+
+      console.log('📎 已选择文件:', file.name, file.type, (file.size / 1024).toFixed(1) + ' KB')
+    }
+  }
+
+  // 移除文件
+  const handleRemoveFile = () => {
+    setCurrentFile(null)
+    setFilePreviewUrl(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+    console.log('🗑️ 已移除文件')
+  }
 
   // 发送消息
-  const handleSend = () => {
-    if (!inputValue.trim()) return
+  const handleSend = async () => {
+    const message = inputValue.trim()
+    if (!message && !currentFile) return
 
-    sendChatMessage(inputValue.trim())
+    await sendChatMessage(message, currentFile)
     setInputValue('')
+    handleRemoveFile()
 
     // 重置 textarea 高度
     if (textareaRef.current) {
@@ -248,6 +283,43 @@ export function ChatInput() {
         </div>
       )}
 
+      {/* 文件预览 */}
+      {currentFile && (
+        <div className="mb-4 px-4 py-3 bg-gray-50/80 rounded-2xl flex items-center gap-3">
+          {filePreviewUrl ? (
+            <img
+              src={filePreviewUrl}
+              alt="预览"
+              className="w-14 h-14 rounded-lg object-cover"
+            />
+          ) : (
+            <div className="w-14 h-14 rounded-lg bg-gray-200/80 flex items-center justify-center">
+              <FileIcon className="w-6 h-6 text-gray-500" />
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-gray-900 truncate">{currentFile.name}</p>
+            <p className="text-xs text-gray-500">{(currentFile.size / 1024).toFixed(1)} KB</p>
+          </div>
+          <button
+            type="button"
+            onClick={handleRemoveFile}
+            className="w-8 h-8 rounded-full bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition-colors"
+            title="移除文件"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* 上传中提示 */}
+      {isUploading && (
+        <div className="mb-4 px-4 py-3 bg-blue-50/80 rounded-2xl flex items-center gap-3">
+          <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm text-blue-700">正在上传文件...</p>
+        </div>
+      )}
+
       {/* 主输入区域 - 参考截图设计 */}
       <div className="relative bg-gray-100/80 rounded-3xl shadow-sm hover:shadow transition-shadow duration-200">
           {/* 文本输入框 */}
@@ -283,8 +355,16 @@ export function ChatInput() {
               </button>
 
               {/* 附件按钮 */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,.pdf,.txt,.doc,.docx"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
               <button
                 type="button"
+                onClick={() => fileInputRef.current?.click()}
                 className="w-10 h-10 rounded-full bg-gray-200/80 hover:bg-gray-300/80 text-gray-600 flex items-center justify-center transition-all duration-200"
                 title="添加附件"
               >

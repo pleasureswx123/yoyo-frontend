@@ -29,6 +29,10 @@ export function AppProvider({ children }) {
   // 深度思考状态
   const [isThinkingEnabled, setIsThinkingEnabled] = useState(false)
 
+  // 附件状态
+  const [currentFile, setCurrentFile] = useState(null)
+  const [isUploading, setIsUploading] = useState(false)
+
   // ASR 状态
   const [asrStatus, setAsrStatus] = useState({
     isRecording: false,
@@ -83,8 +87,39 @@ export function AppProvider({ children }) {
     setMessages([])
   }, [])
 
+  // 上传文件到服务器
+  const uploadFile = useCallback(async (file) => {
+    try {
+      setIsUploading(true)
+      const formData = new FormData()
+      formData.append('file', file)
+
+      // 根据文件类型选择上传端点
+      const endpoint = file.type.startsWith('image/') ? '/upload/image' : '/upload/file'
+      const response = await fetch(`http://localhost:8000${endpoint}`, {
+        method: 'POST',
+        body: formData
+      })
+
+      const result = await response.json()
+      if (result.success) {
+        const fileUrl = `http://localhost:8000${result.file_url}`
+        console.log('✅ 文件上传成功:', fileUrl)
+        return fileUrl
+      } else {
+        throw new Error(result.error || '上传失败')
+      }
+    } catch (error) {
+      console.error('❌ 文件上传失败:', error)
+      toast.error(`文件上传失败: ${error.message}`)
+      return null
+    } finally {
+      setIsUploading(false)
+    }
+  }, [toast])
+
   // 发送消息
-  const sendChatMessage = useCallback((content, file = null) => {
+  const sendChatMessage = useCallback(async (content, file = null) => {
     if (!websocket.isConnected) {
       console.error('WebSocket 未连接')
       return false
@@ -113,12 +148,12 @@ export function AppProvider({ children }) {
       console.log('🔍 启用联网搜索:', content)
     }
 
-    // 如果有文件，添加文件信息
+    // 如果有文件，先上传文件
     if (file) {
-      messageData.file = {
-        name: file.name,
-        type: file.type,
-        data: file.data
+      const fileUrl = await uploadFile(file)
+      if (fileUrl) {
+        messageData.image_url = fileUrl
+        console.log('📎 附件已上传:', fileUrl)
       }
     }
 
@@ -126,7 +161,7 @@ export function AppProvider({ children }) {
     const success = websocket.sendMessage(messageData)
 
     return success
-  }, [websocket, audio, session, addMessage, isSearchEnabled])
+  }, [websocket, audio, session, addMessage, isSearchEnabled, uploadFile])
 
   // 切换语音
   const changeVoice = useCallback((voice) => {
@@ -232,6 +267,12 @@ export function AppProvider({ children }) {
     // Thinking
     isThinkingEnabled,
     toggleThinking,
+
+    // File Upload
+    currentFile,
+    setCurrentFile,
+    isUploading,
+    uploadFile,
 
     // ASR
     asrStatus,
