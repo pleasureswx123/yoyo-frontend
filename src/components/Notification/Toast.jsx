@@ -23,26 +23,39 @@ export function Toast({ message, type = 'info', duration = 3000, onClose }) {
     warning: <AlertCircle className="w-5 h-5" />
   }
 
-  // 使用与 test.html 一致的纯色背景样式
-  const bgColors = {
-    success: '#10b981', // 绿色
-    error: '#ef4444',   // 红色
-    info: '#3b82f6',    // 蓝色
-    warning: '#f59e0b'  // 橙色
+  // 柔和的渐变背景样式
+  const styles = {
+    success: {
+      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+      borderColor: 'rgba(16, 185, 129, 0.3)'
+    },
+    error: {
+      background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+      borderColor: 'rgba(239, 68, 68, 0.3)'
+    },
+    info: {
+      background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+      borderColor: 'rgba(59, 130, 246, 0.3)'
+    },
+    warning: {
+      background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+      borderColor: 'rgba(245, 158, 11, 0.3)'
+    }
   }
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 100 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 100 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      initial={{ opacity: 0, x: 100, scale: 0.95 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      exit={{ opacity: 0, x: 100, scale: 0.95 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
       style={{
-        backgroundColor: bgColors[type],
+        background: styles[type].background,
+        borderColor: styles[type].borderColor,
         color: 'white',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
       }}
-      className="flex items-center gap-3 px-5 py-3 rounded-lg"
+      className="flex items-center gap-3 px-5 py-3.5 rounded-2xl border backdrop-blur-sm"
     >
       <div className="text-white">
         {icons[type]}
@@ -50,7 +63,7 @@ export function Toast({ message, type = 'info', duration = 3000, onClose }) {
       <p className="text-sm font-medium flex-1">{message}</p>
       <button
         onClick={onClose}
-        className="text-white/80 hover:text-white transition-colors"
+        className="text-white/70 hover:text-white transition-colors p-1 hover:bg-white/10 rounded-lg"
       >
         <XCircle className="w-4 h-4" />
       </button>

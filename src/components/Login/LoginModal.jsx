@@ -179,28 +179,29 @@ export function LoginModal({ isOpen, onClose }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed w-full min-h-dvh inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
+        className="fixed w-full min-h-dvh inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
         onClick={(e) => e.target === e.currentTarget && onClose()}
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: -20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: -20 }}
-          className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8"
+          transition={{ duration: 0.3, ease: 'easeOut' }}
+          className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-xl max-w-md w-full p-8"
         >
           {/* Header */}
           <div className="text-center mb-6">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+            <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-400/90 to-pink-400/90 flex items-center justify-center shadow-sm">
               {showSwitchUser ? (
-                <Users className="w-8 h-8 text-white" />
+                <Users className="w-7 h-7 text-white" />
               ) : (
-                <User className="w-8 h-8 text-white" />
+                <User className="w-7 h-7 text-white" />
               )}
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">
               {showSwitchUser ? '👥 切换用户' : '欢迎来到悠悠'}
             </h2>
-            <p className="text-gray-600 text-sm">
+            <p className="text-gray-500/80 text-sm">
               {showSwitchUser ? '选择要切换到的用户账户' : '请登录或注册以开始对话'}
             </p>
 
@@ -208,7 +209,7 @@ export function LoginModal({ isOpen, onClose }) {
             {!showSwitchUser && session.isLoggedIn && (
               <button
                 onClick={handleShowSwitchUser}
-                className="mt-4 text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 mx-auto"
+                className="mt-4 text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1 mx-auto transition-colors"
               >
                 <Users className="w-4 h-4" />
                 切换到其他用户
@@ -219,7 +220,7 @@ export function LoginModal({ isOpen, onClose }) {
             {showSwitchUser && (
               <button
                 onClick={() => setShowSwitchUser(false)}
-                className="mt-4 text-sm text-gray-600 hover:text-gray-700 font-medium"
+                className="mt-4 text-sm text-gray-600 hover:text-gray-800 font-medium transition-colors"
               >
                 ← 返回登录
               </button>
@@ -239,8 +240,8 @@ export function LoginModal({ isOpen, onClose }) {
                   </h4>
 
                   {loadingUsers ? (
-                    <div className="text-center py-8 text-gray-500">
-                      <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                    <div className="text-center py-8 text-gray-500/80">
+                      <div className="w-6 h-6 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
                       正在加载用户列表...
                     </div>
                   ) : activeUsers.length > 0 ? (
@@ -251,15 +252,15 @@ export function LoginModal({ isOpen, onClose }) {
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           onClick={() => handleSwitchToUser(user)}
-                          className="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all group"
+                          className="p-4 border border-gray-200/80 rounded-2xl hover:border-purple-300 hover:bg-purple-50/50 cursor-pointer transition-all duration-200 group"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
-                              <div className="font-semibold text-gray-900 group-hover:text-blue-600 flex items-center gap-2">
+                              <div className="font-medium text-gray-800 group-hover:text-purple-600 flex items-center gap-2 transition-colors">
                                 {user.name || '匿名用户'}
                                 <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                               </div>
-                              <div className="text-sm text-gray-500 mt-1">
+                              <div className="text-sm text-gray-500/80 mt-1">
                                 ID: {user.user_id}
                               </div>
                             </div>
@@ -268,7 +269,7 @@ export function LoginModal({ isOpen, onClose }) {
                                 {formatLastActive(user.last_active)}
                               </div>
                               {user.conversation_count > 0 && (
-                                <div className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full mt-1 inline-block">
+                                <div className="text-xs bg-purple-100/80 text-purple-700 px-2 py-1 rounded-full mt-1 inline-block">
                                   {user.conversation_count} 次对话
                                 </div>
                               )}
@@ -278,14 +279,14 @@ export function LoginModal({ isOpen, onClose }) {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-8 text-gray-500">
+                    <div className="text-center py-8 text-gray-500/80">
                       暂无其他用户
                     </div>
                   )}
                 </div>
 
                 {/* 手动输入用户名切换 */}
-                <div className="pt-4 border-t border-gray-200">
+                <div className="pt-4 border-t border-gray-100/80">
                   <h4 className="text-sm font-semibold text-gray-700 mb-3">
                     登录其他用户
                   </h4>
@@ -296,7 +297,7 @@ export function LoginModal({ isOpen, onClose }) {
                       onChange={(e) => setUserId(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="输入用户ID..."
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
+                      className="w-full px-4 py-3 bg-gray-50/50 border border-gray-200/80 rounded-2xl focus:border-purple-300 focus:bg-white focus:outline-none transition-all"
                       disabled={isLoading}
                     />
                     <input
@@ -305,13 +306,13 @@ export function LoginModal({ isOpen, onClose }) {
                       onChange={(e) => setUserName(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="输入用户名..."
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
+                      className="w-full px-4 py-3 bg-gray-50/50 border border-gray-200/80 rounded-2xl focus:border-purple-300 focus:bg-white focus:outline-none transition-all"
                       disabled={isLoading}
                     />
                     <button
                       onClick={handleLogin}
                       disabled={isLoading || !userId.trim() || !userName.trim()}
-                      className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                      className="w-full bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 shadow-sm"
                     >
                       {isLoading ? (
                         <>
@@ -344,7 +345,7 @@ export function LoginModal({ isOpen, onClose }) {
                   onChange={(e) => setUserId(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="输入用户ID或搜索..."
-                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50/50 border border-gray-200/80 rounded-2xl focus:border-purple-300 focus:bg-white focus:outline-none transition-all"
                   disabled={isLoading}
                 />
               </div>
@@ -354,20 +355,20 @@ export function LoginModal({ isOpen, onClose }) {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto"
+                  className="absolute z-10 w-full mt-2 bg-white/95 backdrop-blur-sm border border-gray-200/80 rounded-2xl shadow-lg max-h-48 overflow-y-auto"
                 >
                   {searchResults.map((user) => (
                     <div
                       key={user.user_id}
                       onClick={() => handleSelectUser(user)}
-                      className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 flex items-center justify-between"
+                      className="px-4 py-3 hover:bg-purple-50/50 cursor-pointer border-b border-gray-100/50 last:border-b-0 flex items-center justify-between transition-colors"
                     >
                       <div>
-                        <div className="font-medium text-gray-900">{user.name}</div>
-                        <div className="text-sm text-gray-500">{user.user_id}</div>
+                        <div className="font-medium text-gray-800">{user.name}</div>
+                        <div className="text-sm text-gray-500/80">{user.user_id}</div>
                       </div>
                       {user.conversation_count > 0 && (
-                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                        <span className="text-xs bg-purple-100/80 text-purple-700 px-2 py-1 rounded-full">
                           {user.conversation_count} 次对话
                         </span>
                       )}
@@ -388,7 +389,7 @@ export function LoginModal({ isOpen, onClose }) {
                 onChange={(e) => setUserName(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="输入你的名字..."
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
+                className="w-full px-4 py-3 bg-gray-50/50 border border-gray-200/80 rounded-2xl focus:border-purple-300 focus:bg-white focus:outline-none transition-all"
                 disabled={isLoading}
               />
             </div>
@@ -398,7 +399,7 @@ export function LoginModal({ isOpen, onClose }) {
               <button
                 onClick={handleLogin}
                 disabled={isLoading || !userId.trim() || !userName.trim()}
-                className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="flex-1 bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 shadow-sm"
               >
                 {isLoading ? (
                   <>
@@ -416,7 +417,7 @@ export function LoginModal({ isOpen, onClose }) {
               <button
                 onClick={handleShowSwitchUser}
                 disabled={isLoading}
-                className="flex-1 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="flex-1 bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 shadow-sm"
               >
                 <Users className="w-5 h-5" />
                 <span>切换用户</span>
@@ -428,8 +429,8 @@ export function LoginModal({ isOpen, onClose }) {
 
           {/* Tips */}
           {!showSwitchUser && (
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-800">
+            <div className="mt-6 p-4 bg-purple-50/50 rounded-2xl border border-purple-100/50">
+              <p className="text-sm text-purple-800/90">
                 💡 <strong>提示:</strong> 如果是新用户,输入任意ID和名字即可自动注册
               </p>
             </div>
