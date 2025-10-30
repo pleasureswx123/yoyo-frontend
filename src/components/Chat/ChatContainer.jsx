@@ -72,61 +72,59 @@ export function ChatContainer() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, ease: 'easeOut' }}
-                className="w-full py-1.5"
+                className="w-full py-1.5 px-6"
               >
-                <div className="max-w-4xl mx-auto px-6">
-                  {message.type === 'system' ? (
-                    /* 系统消息 - 居中 */
-                    <div className="text-center text-gray-400/80 text-sm py-2">
-                      {message.content}
+                {message.type === 'system' ? (
+                  /* 系统消息 - 居中 */
+                  <div className="text-center text-gray-400/80 text-sm py-2">
+                    {message.content}
+                  </div>
+                ) : message.type === 'user' ? (
+                  /* 用户消息 - 右侧 */
+                  <div className="flex items-start gap-3 justify-end">
+                    {/* 消息内容 */}
+                    <div className="flex-1 flex justify-end">
+                      <div className="inline-block bg-gray-100/60 text-gray-700 rounded-3xl rounded-tr-md px-4 py-2.5 max-w-2xl shadow-sm">
+                        <p className="leading-relaxed text-[15px]">
+                          {formatMessage(message.content)}
+                        </p>
+                      </div>
                     </div>
-                  ) : message.type === 'user' ? (
-                    /* 用户消息 - 右侧 */
-                    <div className="flex items-start gap-3 justify-end">
-                      {/* 消息内容 */}
-                      <div className="flex-1 flex justify-end">
-                        <div className="inline-block bg-gray-100/60 text-gray-700 rounded-3xl rounded-tr-md px-4 py-2.5 max-w-2xl shadow-sm">
-                          <p className="leading-relaxed text-[15px]">
+
+                    {/* 用户头像 */}
+                    <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-blue-400/90 to-cyan-400/90 flex items-center justify-center text-white text-sm font-medium shadow-sm">
+                      {getUserInitial()}
+                    </div>
+                  </div>
+                ) : (
+                  /* AI 消息 - 左侧 */
+                  <div className="flex items-start gap-3">
+                    {/* AI 头像 */}
+                    <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-purple-400/90 to-pink-400/90 flex items-center justify-center text-white text-sm font-medium shadow-sm">
+                      AI
+                    </div>
+
+                    {/* 消息内容 */}
+                    <div className="flex-1">
+                      {message.content ? (
+                        <div className="inline-block bg-gray-100/60 rounded-3xl rounded-tl-md px-4 py-2.5 max-w-2xl">
+                          <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-[15px]">
                             {formatMessage(message.content)}
                           </p>
                         </div>
-                      </div>
-
-                      {/* 用户头像 */}
-                      <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-blue-400/90 to-cyan-400/90 flex items-center justify-center text-white text-sm font-medium shadow-sm">
-                        {getUserInitial()}
-                      </div>
-                    </div>
-                  ) : (
-                    /* AI 消息 - 左侧 */
-                    <div className="flex items-start gap-3">
-                      {/* AI 头像 */}
-                      <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-purple-400/90 to-pink-400/90 flex items-center justify-center text-white text-sm font-medium shadow-sm">
-                        AI
-                      </div>
-
-                      {/* 消息内容 */}
-                      <div className="flex-1">
-                        {message.content ? (
-                          <div className="inline-block bg-gray-100/60 rounded-3xl rounded-tl-md px-4 py-2.5 max-w-2xl">
-                            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-[15px]">
-                              {formatMessage(message.content)}
-                            </p>
+                      ) : (
+                        /* 空消息显示打字指示器 */
+                        <div className="inline-block bg-gray-100/60 rounded-3xl rounded-tl-md px-5 py-3.5">
+                          <div className="flex gap-1.5">
+                            <div className="w-2 h-2 bg-gray-400/70 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                            <div className="w-2 h-2 bg-gray-400/70 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                            <div className="w-2 h-2 bg-gray-400/70 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                           </div>
-                        ) : (
-                          /* 空消息显示打字指示器 */
-                          <div className="inline-block bg-gray-100/60 rounded-3xl rounded-tl-md px-5 py-3.5">
-                            <div className="flex gap-1.5">
-                              <div className="w-2 h-2 bg-gray-400/70 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                              <div className="w-2 h-2 bg-gray-400/70 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                              <div className="w-2 h-2 bg-gray-400/70 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </motion.div>
             )
           })}
