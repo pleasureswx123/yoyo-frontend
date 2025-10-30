@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback } from 'react'
 import { useWebSocket } from '../hooks/useWebSocket'
 import { useSession } from '../hooks/useSession'
 import { useAudio } from '../hooks/useAudio'
+import { useToast } from '../hooks/useToast'
 
 /**
  * 应用全局状态 Context
@@ -13,11 +14,23 @@ export function AppProvider({ children }) {
   const websocket = useWebSocket()
   const session = useSession()
   const audio = useAudio()
+  const toast = useToast()
 
   // 聊天相关状态
   const [messages, setMessages] = useState([])
   const [isTyping, setIsTyping] = useState(false)
   const [currentBotMessage, setCurrentBotMessage] = useState(null)
+
+  // 搜索状态
+  const [isSearching, setIsSearching] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // ASR 状态
+  const [asrStatus, setAsrStatus] = useState({
+    isRecording: false,
+    text: '',
+    isFinal: false
+  })
 
   // 用户档案相关状态
   const [profileCompletion, setProfileCompletion] = useState(0)
@@ -125,7 +138,7 @@ export function AppProvider({ children }) {
     })
   }, [websocket])
 
-  // 切换提示词模式
+  // 切换提示词模式（发送到后端）
   const changePromptMode = useCallback((mode) => {
     setPromptMode(mode)
     websocket.sendMessage({
@@ -133,6 +146,11 @@ export function AppProvider({ children }) {
       mode
     })
   }, [websocket])
+
+  // 仅更新提示词模式状态（不发送消息）
+  const updatePromptMode = useCallback((mode) => {
+    setPromptMode(mode)
+  }, [])
 
   // 切换沉浸模式
   const toggleImmersiveMode = useCallback(() => {
@@ -142,13 +160,16 @@ export function AppProvider({ children }) {
   const value = {
     // WebSocket
     websocket,
-    
+
     // Session
     session,
-    
+
     // Audio
     audio,
-    
+
+    // Toast
+    toast,
+
     // Messages
     messages,
     setMessages,
@@ -156,13 +177,23 @@ export function AppProvider({ children }) {
     updateLastMessage,
     clearMessages,
     sendChatMessage,
-    
+
     // Typing
     isTyping,
     setIsTyping,
     currentBotMessage,
     setCurrentBotMessage,
-    
+
+    // Search
+    isSearching,
+    setIsSearching,
+    searchQuery,
+    setSearchQuery,
+
+    // ASR
+    asrStatus,
+    setAsrStatus,
+
     // Profile
     profileCompletion,
     setProfileCompletion,
@@ -170,11 +201,11 @@ export function AppProvider({ children }) {
     setConversationStage,
     emotion,
     setEmotion,
-    
+
     // System Status
     systemStatus,
     setSystemStatus,
-    
+
     // Settings
     currentVoice,
     changeVoice,
@@ -184,6 +215,7 @@ export function AppProvider({ children }) {
     changeASR,
     promptMode,
     changePromptMode,
+    updatePromptMode,
     isImmersiveMode,
     toggleImmersiveMode
   }

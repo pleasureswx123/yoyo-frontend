@@ -153,6 +153,24 @@ export function LoginModal({ isOpen, onClose }) {
     }
   }
 
+  // ESC 键关闭弹窗
+  useEffect(() => {
+    const handleEscKey = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        console.log('🎯 ESC键触发 - 关闭登录弹窗')
+        onClose()
+      }
+    }
+
+    if (isOpen) {
+      window.addEventListener('keydown', handleEscKey)
+    }
+
+    return () => {
+      window.removeEventListener('keydown', handleEscKey)
+    }
+  }, [isOpen, onClose])
+
   if (!isOpen) return null
 
   return (
