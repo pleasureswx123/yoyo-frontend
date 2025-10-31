@@ -29,6 +29,7 @@ export function ChatInput() {
   const textareaRef = useRef(null)
   const inputRef = useRef(null)
   const fileInputRef = useRef(null)
+  const bestASRTextRef = useRef('') // 使用 ref 存储最新的 ASR 结果,避免闭包陷阱
 
   // 处理文件选择
   const handleFileSelect = (e) => {
@@ -107,11 +108,9 @@ export function ChatInput() {
       setIsASRStarting(true)
       setBestASRText('')
       console.log('🎤 开始ASR录音')
-      debugger
 
       await audio.startRecording((audioData) => {
         if (websocket.isConnected) {
-          debugger
           const pcm16 = new Int16Array(audioData)
           const base64String = btoa(String.fromCharCode(...new Uint8Array(pcm16.buffer)))
           console.log('🎤 发送PCM音频数据块:', base64String.length, 'chars')
@@ -123,7 +122,6 @@ export function ChatInput() {
       })
 
       websocket.sendMessage({ type: 'start_asr' })
-      debugger
       console.log('✅ ASR 已启动，已发送 start_asr 消息')
       setIsASRStarting(false)
     } catch (error) {
@@ -167,12 +165,14 @@ export function ChatInput() {
 
       // 等待一小段时间让ASR处理完最后的结果
       setTimeout(() => {
-        console.log('🎤 检查ASR结果，bestASRText:', bestASRText)
+        // ✅ 使用 ref 获取最新值,避免闭包陷阱
+        const finalText = bestASRTextRef.current
+        console.log('🎤 检查ASR结果，bestASRText:', finalText)
 
         // 如果有识别结果，自动发送消息
-        if (bestASRText && bestASRText.trim()) {
-          console.log('🎤 ASR完成，发送结果:', bestASRText)
-          setInputValue(bestASRText.trim())
+        if (finalText && finalText.trim()) {
+          console.log('🎤 ASR完成，发送结果:', finalText)
+          setInputValue(finalText.trim())
 
           // 自动发送消息
           setTimeout(() => {
@@ -185,7 +185,7 @@ export function ChatInput() {
     } catch (error) {
       console.error('❌ 停止ASR失败:', error)
     }
-  }, [audio, websocket, bestASRText, handleSend, isASRStarting])
+  }, [audio, websocket, handleSend, isASRStarting]) // ✅ 移除 bestASRText 依赖
 
 
 
@@ -223,15 +223,26 @@ export function ChatInput() {
         setInputValue(data.text)
         audio.setAsrText(data.text)
 
-        // 更新最佳结果（如果当前结果更长或更有意义）
-        if (data.text.trim() && (data.text.length > bestASRText.length || !bestASRText)) {
+        // ✅ 使用函数式更新,避免依赖 bestASRText
+        setBestASRText(prev => {
+          const currentText = data.text.trim()
+
           // 过滤掉单独的标点符号
-          if (data.text.trim() !== '。' && data.text.trim() !== '，' &&
-              data.text.trim() !== '？' && data.text.trim() !== '！') {
-            setBestASRText(data.text)
-            console.log('🎤 更新最佳ASR结果:', data.text)
+          if (currentText === '。' || currentText === '，' ||
+              currentText === '？' || currentText === '！') {
+            return prev
           }
-        }
+
+          // 更新最佳结果（如果当前结果更长或更有意义）
+          if (currentText && (data.text.length > prev.length || !prev)) {
+            console.log('🎤 更新最佳ASR结果:', data.text)
+            // ✅ 同步更新 ref
+            bestASRTextRef.current = data.text
+            return data.text
+          }
+
+          return prev
+        })
       }
     }
 
@@ -240,7 +251,7 @@ export function ChatInput() {
     return () => {
       websocket.off('asr_result', handleASRResult)
     }
-  }, [websocket, audio, bestASRText])
+  }, [websocket, audio])
 
   return (
     <div className="bg-gray-50/50 p-4">
