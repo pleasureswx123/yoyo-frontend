@@ -23,15 +23,14 @@ export function ChatInput() {
     isUploading
   } = useApp()
   const [inputValue, setInputValue] = useState('')
-  const [bestASRText, setBestASRText] = useState('')
-  const [isASRStarting, setIsASRStarting] = useState(false) // 标记ASR是否正在启动
-  const [waitingForFinalResult, setWaitingForFinalResult] = useState(false) // 标记是否正在等待最终结果
   const [filePreviewUrl, setFilePreviewUrl] = useState(null)
   const textareaRef = useRef(null)
-  const inputRef = useRef(null)
   const fileInputRef = useRef(null)
-  const bestASRTextRef = useRef('') // 使用 ref 存储最新的 ASR 结果,避免闭包陷阱
-  const finalResultTimeoutRef = useRef(null) // 存储超时定时器 ID
+
+  // 新的 ASR 状态管理
+  const [finalResult, setFinalResult] = useState({isFinal: false, msg: ''})
+  
+  
 
   // 处理文件选择
   const handleFileSelect = (e) => {
@@ -99,27 +98,18 @@ export function ChatInput() {
     autoResizeTextarea()
   }, [inputValue])
 
-  // 开始 ASR 录音（通用函数）
+  // 开始 ASR 录音
   const startASR = useCallback(async () => {
-    // 如果已经在录音或正在启动，忽略
-    if (audio.isRecording || isASRStarting) {
-      console.log('🎤 ASR已在进行中或正在启动，忽略')
+    // 如果已经在录音，忽略
+    if (audio.isRecording) {
+      console.log('🎤 ASR已在进行中，忽略')
       return
     }
 
     try {
-      setIsASRStarting(true)
-      setBestASRText('')
-      bestASRTextRef.current = '' // 重置 ref
-      setWaitingForFinalResult(false) // 重置等待状态
-
-      // 清除之前的超时定时器
-      if (finalResultTimeoutRef.current) {
-        clearTimeout(finalResultTimeoutRef.current)
-        finalResultTimeoutRef.current = null
-      }
-
-      console.log('🎤 开始ASR录音')
+      // 1. 重置 finalResult 为默认值
+      setFinalResult({isFinal: false, msg: ''})
+      console.log('🎤 开始ASR录音，重置 finalResult')
 
       await audio.startRecording((audioData) => {
         if (websocket.isConnected) {
@@ -135,35 +125,18 @@ export function ChatInput() {
 
       websocket.sendMessage({ type: 'start_asr' })
       console.log('✅ ASR 已启动，已发送 start_asr 消息')
-      setIsASRStarting(false)
     } catch (error) {
       console.error('❌ 启动ASR失败:', error)
-      setIsASRStarting(false)
     }
-  }, [audio, websocket, isASRStarting])
+  }, [audio, websocket])
 
-  // 停止 ASR 录音（通用函数）
+  // 停止 ASR 录音
   const stopASR = useCallback(async () => {
-    // 如果未在录音且未在启动中，忽略
-    if (!audio.isRecording && !isASRStarting) {
-      console.log('🎤 ASR未在进行中，跳过')
-      return
-    }
+    console.log('🔍 stopASR 被调用, audio.isRecording:', audio.isRecording)
 
-    // 如果正在启动，等待启动完成
-    if (isASRStarting) {
-      console.log('🎤 ASR正在启动，等待启动完成...')
-      // 等待最多1秒让ASR启动完成
-      let waitCount = 0
-      while (isASRStarting && waitCount < 10) {
-        await new Promise(resolve => setTimeout(resolve, 100))
-        waitCount++
-      }
-    }
-
-    // 再次检查是否在录音
+    // 如果未在录音，忽略
     if (!audio.isRecording) {
-      console.log('🎤 ASR未在录音状态，跳过停止')
+      console.log('🎤 ASR未在进行中，跳过')
       return
     }
 
@@ -173,55 +146,11 @@ export function ChatInput() {
 
       // 通知后端停止 ASR
       websocket.sendMessage({ type: 'stop_asr' })
-      console.log('🎤 已发送 stop_asr 消息')
-
-      // ✅ 方案3: 设置等待最终结果状态
-      setWaitingForFinalResult(true)
-      console.log('🎤 等待ASR最终结果 (is_final=true)，超时保护: 1秒')
-
-      // ✅ 设置超时保护 (1秒)
-      finalResultTimeoutRef.current = setTimeout(() => {
-        console.log('⚠️ 等待ASR最终结果超时，使用当前最佳结果')
-
-        // 重置等待状态
-        setWaitingForFinalResult(false)
-
-        // 使用当前最佳结果
-        const finalText = bestASRTextRef.current?.trim()
-
-        if (finalText) {
-          console.log('🎤 超时保护触发，发送当前最佳结果:', finalText)
-
-          // 确保输入框显示最终结果
-          setInputValue(finalText)
-
-          // ✅ 直接发送，不依赖 inputValue 的异步更新
-          sendChatMessage(finalText, currentFile)
-
-          // 清空输入框和文件
-          setTimeout(() => {
-            setInputValue('')
-            handleRemoveFile()
-            if (textareaRef.current) {
-              textareaRef.current.style.height = 'auto'
-            }
-          }, 100)
-        } else {
-          console.log('🎤 ASR无有效结果')
-        }
-      }, 1000) // 1秒超时保护
-
+      console.log('🎤 已发送 stop_asr 消息，等待最终结果')
     } catch (error) {
       console.error('❌ 停止ASR失败:', error)
-      setWaitingForFinalResult(false)
-
-      // 清除超时定时器
-      if (finalResultTimeoutRef.current) {
-        clearTimeout(finalResultTimeoutRef.current)
-        finalResultTimeoutRef.current = null
-      }
     }
-  }, [audio, websocket, sendChatMessage, currentFile, handleRemoveFile, isASRStarting])
+  }, [audio, websocket])
 
 
 
@@ -247,6 +176,35 @@ export function ChatInput() {
     }
   }, [audio.isRecording, stopASR])
 
+  // 监听 finalResult 的 isFinal 值，当为 true 时发送消息
+  useEffect(() => {
+    if (finalResult.isFinal && finalResult.msg.trim()) {
+      console.log('✅ finalResult.isFinal 为 true，准备发送消息:', finalResult.msg)
+
+      // 保存消息内容
+      const messageToSend = finalResult.msg
+      const fileToSend = currentFile
+
+      // 立即重置 finalResult，防止重复触发
+      setFinalResult({isFinal: false, msg: ''})
+
+      // 显示在输入框
+      setInputValue(messageToSend)
+
+      // 发送消息
+      sendChatMessage(messageToSend, fileToSend)
+
+      // 清空输入框和文件
+      setTimeout(() => {
+        setInputValue('')
+        handleRemoveFile()
+        if (textareaRef.current) {
+          textareaRef.current.style.height = 'auto'
+        }
+      }, 100)
+    }
+  }, [finalResult.isFinal, finalResult.msg])
+
 
 
   // 监听 ASR 结果
@@ -254,70 +212,24 @@ export function ChatInput() {
     const handleASRResult = (data) => {
       console.log('🎤 收到ASR识别结果:', data.text, '(final:', data.is_final, ')')
 
-      if (data.text) {
-        // 实时更新输入框
+      if (data.is_final) {
+        // 2. 当 is_final 为 true 时，改变 finalResult 的 isFinal 为 true
+        console.log('🎤 收到最终结果信号 (is_final=true)，设置 isFinal=true')
+        setFinalResult(prev => ({
+          ...prev,
+          isFinal: true
+        }))
+      } else if (data.text) {
+        // 3. 当 is_final 为 false 时，更新 finalResult 的 msg 值
+        console.log('🎤 更新 finalResult.msg:', data.text)
+        setFinalResult(prev => ({
+          ...prev,
+          msg: data.text
+        }))
+
+        // 实时更新输入框显示
         setInputValue(data.text)
         audio.setAsrText(data.text)
-
-        // ✅ 使用函数式更新,避免依赖 bestASRText
-        setBestASRText(prev => {
-          const currentText = data.text.trim()
-
-          // 过滤掉单独的标点符号
-          if (currentText === '。' || currentText === '，' ||
-              currentText === '？' || currentText === '！') {
-            return prev
-          }
-
-          // 更新最佳结果（如果当前结果更长或更有意义）
-          if (currentText && (data.text.length > prev.length || !prev)) {
-            console.log('🎤 更新最佳ASR结果:', data.text)
-            // ✅ 同步更新 ref
-            bestASRTextRef.current = data.text
-            return data.text
-          }
-
-          return prev
-        })
-      }
-
-      // ✅ 方案3: 监听 is_final=true，基于事件驱动自动发送
-      if (data.is_final && waitingForFinalResult) {
-        console.log('✅ 收到ASR最终结果 (is_final=true)，准备自动发送')
-
-        // 清除超时定时器
-        if (finalResultTimeoutRef.current) {
-          clearTimeout(finalResultTimeoutRef.current)
-          finalResultTimeoutRef.current = null
-          console.log('🎤 已清除超时定时器')
-        }
-
-        // 重置等待状态
-        setWaitingForFinalResult(false)
-
-        // 获取最终文本
-        const finalText = bestASRTextRef.current?.trim()
-
-        if (finalText) {
-          console.log('🎤 ASR最终结果:', finalText, '- 自动发送消息')
-
-          // 确保输入框显示最终结果
-          setInputValue(finalText)
-
-          // ✅ 直接发送，不依赖 inputValue 的异步更新
-          sendChatMessage(finalText, currentFile)
-
-          // 清空输入框和文件
-          setTimeout(() => {
-            setInputValue('')
-            handleRemoveFile()
-            if (textareaRef.current) {
-              textareaRef.current.style.height = 'auto'
-            }
-          }, 100)
-        } else {
-          console.log('⚠️ ASR最终结果为空，不发送消息')
-        }
       }
     }
 
@@ -326,18 +238,7 @@ export function ChatInput() {
     return () => {
       websocket.off('asr_result', handleASRResult)
     }
-  }, [websocket, audio, sendChatMessage, currentFile, handleRemoveFile, waitingForFinalResult])
-
-  // 组件卸载时清理超时定时器
-  useEffect(() => {
-    return () => {
-      if (finalResultTimeoutRef.current) {
-        clearTimeout(finalResultTimeoutRef.current)
-        finalResultTimeoutRef.current = null
-        console.log('🧹 组件卸载，清理超时定时器')
-      }
-    }
-  }, [])
+  }, [websocket, audio])
 
   return (
     <div className="bg-gray-50/50 p-4">
@@ -373,12 +274,12 @@ export function ChatInput() {
         </div>
       )}
 
-      {audio.asrText && !audio.isRecording && (
-        <div className="mb-4 px-4 py-3 bg-green-50/80 rounded-2xl">
-          <p className="text-xs text-green-600/80 font-medium mb-1">识别结果</p>
-          <p className="text-sm text-green-900">{audio.asrText}</p>
-        </div>
-      )}
+      {/*{audio.asrText && !audio.isRecording && (*/}
+      {/*  <div className="mb-4 px-4 py-3 bg-green-50/80 rounded-2xl">*/}
+      {/*    <p className="text-xs text-green-600/80 font-medium mb-1">识别结果</p>*/}
+      {/*    <p className="text-sm text-green-900">{audio.asrText}</p>*/}
+      {/*  </div>*/}
+      {/*)}*/}
 
       {/* 文件预览 */}
       {currentFile && (
