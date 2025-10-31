@@ -435,7 +435,7 @@ function AppContent() {
       <SearchIndicator isSearching={isSearching} query={searchQuery} />
 
       {/* ASR Indicator */}
-      <ASRIndicator asrStatus={asrStatus} />
+      {/*<ASRIndicator asrStatus={asrStatus} />*/}
 
       {/* Login Modal */}
       <LoginModal

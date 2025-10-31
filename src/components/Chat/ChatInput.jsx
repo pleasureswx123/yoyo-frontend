@@ -29,8 +29,8 @@ export function ChatInput() {
 
   // 新的 ASR 状态管理
   const [finalResult, setFinalResult] = useState({isFinal: false, msg: ''})
-  
-  
+
+
 
   // 处理文件选择
   const handleFileSelect = (e) => {
@@ -62,7 +62,6 @@ export function ChatInput() {
 
   // 发送消息
   const handleSend = async () => {
-    debugger
     const message = inputValue.trim()
     if (!message && !currentFile) return
 
@@ -154,27 +153,20 @@ export function ChatInput() {
 
 
 
-  // 麦克风按钮鼠标按下事件
-  const handleMicMouseDown = useCallback(async (e) => {
+  // 麦克风按钮点击事件 - 切换录音状态
+  const handleMicClick = useCallback(async (e) => {
     e.preventDefault()
-    console.log('🎤 麦克风按钮按下')
-    await startASR()
-  }, [startASR])
 
-  // 麦克风按钮鼠标松开事件
-  const handleMicMouseUp = useCallback(async (e) => {
-    e.preventDefault()
-    console.log('🎤 麦克风按钮松开')
-    await stopASR()
-  }, [stopASR])
-
-  // 麦克风按钮鼠标离开事件（防止用户拖出按钮）
-  const handleMicMouseLeave = useCallback(async () => {
     if (audio.isRecording) {
-      console.log('🎤 鼠标离开麦克风按钮，停止录音')
+      // 正在录音 → 停止录音
+      console.log('🎤 点击停止录音')
       await stopASR()
+    } else {
+      // 未录音 → 开始录音
+      console.log('🎤 点击开始录音')
+      await startASR()
     }
-  }, [audio.isRecording, stopASR])
+  }, [audio.isRecording, startASR, stopASR])
 
   // 监听 finalResult 的 isFinal 值，当为 true 时发送消息
   useEffect(() => {
@@ -260,19 +252,6 @@ export function ChatInput() {
         </div>
       )}
 
-      {/* ASR 状态提示 */}
-      {audio.isRecording && (
-        <div className="mb-4 px-4 py-3 bg-red-50/80 rounded-2xl flex items-center gap-3">
-          <div className="relative flex items-center justify-center">
-            <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
-            <div className="absolute w-4 h-4 bg-red-400 rounded-full animate-ping opacity-75" />
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium text-red-900">正在录音中...</p>
-            <p className="text-xs text-red-600/80 mt-0.5">松开麦克风按钮结束录音</p>
-          </div>
-        </div>
-      )}
 
       {/*{audio.asrText && !audio.isRecording && (*/}
       {/*  <div className="mb-4 px-4 py-3 bg-green-50/80 rounded-2xl">*/}
@@ -320,34 +299,49 @@ export function ChatInput() {
 
       {/* 主输入区域 */}
       <div className="relative bg-gray-100/80 rounded-3xl shadow-sm hover:shadow transition-shadow duration-200">
-          {/* 文本输入框 */}
-          <textarea
-            ref={textareaRef}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={handleKeyPress}
-            placeholder="What would you like to know?"
-            rows={1}
-            className="w-full px-6 pt-6 pb-16 bg-transparent border-0 resize-none focus:outline-none text-gray-800 placeholder:text-gray-500/70 text-base leading-relaxed"
-            style={{ minHeight: '120px', maxHeight: '200px' }}
-          />
 
-          {/* 底部按钮栏 */}
-          <div className="absolute bottom-0 left-0 right-0 px-4 pb-4 flex items-center justify-between">
+        {/* ASR 状态提示 */}
+        {audio.isRecording && (
+          <div className="absolute inset-0">
+            <div className="mb-4 px-4 py-3 bg-red-100/80 rounded-2xl flex items-center gap-3">
+              <div className="relative flex items-center justify-center">
+                <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
+                <div className="absolute w-4 h-4 bg-red-400 rounded-full animate-ping opacity-75" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-red-900">正在录音中...</p>
+                <p className="text-xs text-red-600/80 mt-0.5">松开麦克风按钮结束录音</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 文本输入框 */}
+        <textarea
+          ref={textareaRef}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyPress}
+          placeholder="What would you like to know?"
+          rows={1}
+          className="w-full px-6 pt-6 pb-16 bg-transparent border-0 resize-none focus:outline-none text-gray-800 placeholder:text-gray-500/70 text-base leading-relaxed"
+          style={{minHeight: '120px', maxHeight: '200px'}}
+        />
+
+        {/* 底部按钮栏 */}
+        <div className="absolute bottom-0 left-0 right-0 px-4 pb-4 flex items-center justify-between">
             {/* 左侧按钮组 */}
             <div className="flex items-center gap-2">
               {/* 麦克风按钮 */}
               <button
                 type="button"
-                onMouseDown={handleMicMouseDown}
-                onMouseUp={handleMicMouseUp}
-                onMouseLeave={handleMicMouseLeave}
+                onClick={handleMicClick}
                 className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
                   audio.isRecording
                     ? 'bg-red-500 text-white shadow-lg shadow-red-200/50'
                     : 'bg-gray-200/80 hover:bg-gray-300/80 text-gray-600'
                 }`}
-                title="按住说话"
+                title={audio.isRecording ? '点击停止录音' : '点击开始录音'}
               >
                 <Mic className={`w-5 h-5 ${audio.isRecording ? 'animate-pulse' : ''}`} />
               </button>
