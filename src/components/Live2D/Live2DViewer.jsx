@@ -61,7 +61,7 @@ export function Live2DViewer() {
 
       {/* 加载状态 */}
       {isLoading && !error && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50">
+        <div className="absolute inset-0 flex items-center justify-center ">
           <div className="text-center">
             <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
             <p className="text-sm text-gray-600">Live2D 模型加载中...</p>
