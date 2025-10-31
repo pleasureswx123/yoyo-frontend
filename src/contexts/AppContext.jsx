@@ -96,7 +96,7 @@ export function AppProvider({ children }) {
 
       // 根据文件类型选择上传端点
       const endpoint = file.type.startsWith('image/') ? '/upload/image' : '/upload/file'
-      const response = await fetch(`http://localhost:8000${endpoint}`, {
+      const response = await fetch(endpoint, {
         method: 'POST',
         body: formData
       })

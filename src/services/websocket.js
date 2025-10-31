@@ -28,7 +28,7 @@ class WebSocketService {
     console.log('🔌 正在连接 WebSocket...')
 
     try {
-      this.ws = new WebSocket('ws://localhost:8000/ws')
+      this.ws = new WebSocket('/ws')
 
       this.ws.onopen = () => {
         console.log('✅ WebSocket 连接成功')
@@ -54,7 +54,7 @@ class WebSocketService {
         try {
           const data = JSON.parse(event.data)
           console.log('📨 收到消息:', data.type)
-          
+
           // 触发对应类型的消息处理器
           this.triggerHandler(data.type, data)
           this.triggerHandler('onmessage', data)
@@ -67,7 +67,7 @@ class WebSocketService {
         console.log('🔌 WebSocket 连接关闭')
         this.isConnecting = false
         this.stopHeartbeat()
-        
+
         // 触发关闭回调
         this.triggerHandler('onclose', { connected: false })
 
@@ -93,7 +93,7 @@ class WebSocketService {
    */
   disconnect() {
     console.log('🔌 主动断开 WebSocket 连接')
-    
+
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer)
       this.reconnectTimer = null
@@ -182,7 +182,7 @@ class WebSocketService {
 
     this.reconnectAttempts++
     const delay = this.reconnectDelay * Math.min(this.reconnectAttempts, 3)
-    
+
     console.log(`🔄 ${delay/1000}秒后尝试第 ${this.reconnectAttempts} 次重连...`)
 
     this.reconnectTimer = setTimeout(() => {
@@ -195,7 +195,7 @@ class WebSocketService {
    */
   startHeartbeat() {
     this.stopHeartbeat()
-    
+
     this.heartbeatTimer = setInterval(() => {
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
         this.send({ type: 'ping' })

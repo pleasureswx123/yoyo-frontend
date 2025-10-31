@@ -9,7 +9,6 @@ import { UserMenu } from './components/UserMenu/UserMenu'
 import { Live2DViewer } from './components/Live2D/Live2DViewer'
 import { ToastContainer } from './components/Notification/Toast'
 import { SearchIndicator } from './components/Search/SearchIndicator'
-import { ASRIndicator } from './components/ASR/ASRIndicator'
 
 function AppContent() {
   const {
@@ -427,15 +426,11 @@ function AppContent() {
 
   return (
     <div className="min-h-dvh w-full bg-gradient-to-br from-blue-50 via-white to-purple-50">
-    {/* <div className="bg-[url('/images/noise.png')]  min-h-dvh w-full">*/}
       {/* Toast Notifications */}
       <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
 
       {/* Search Indicator */}
       <SearchIndicator isSearching={isSearching} query={searchQuery} />
-
-      {/* ASR Indicator */}
-      {/*<ASRIndicator asrStatus={asrStatus} />*/}
 
       {/* Login Modal */}
       <LoginModal
@@ -444,7 +439,7 @@ function AppContent() {
       />
 
       {/* Header */}
-      <header className="border-b border-[#ececec] rounded-3xl shadow-lg sticky top-0 z-[1]">
+      <header className="border-b border-[#ececec] rounded-3xl shadow-lg sticky top-0 z-[1] h-[5rem]">
         <div className="container mx-auto px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-400/90 to-pink-400/90 flex items-center justify-center shadow-sm">
@@ -480,14 +475,14 @@ function AppContent() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <main className="container mx-auto px-4 py-8 h-[calc(100vh-5rem)] ">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
           {/* Chat Area */}
           <div className="lg:col-span-2">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col h-[700px]"
+              className="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col h-full"
             >
               <ChatContainer isImmersiveMode={isImmersiveMode} />
               <ChatInput />
@@ -503,69 +498,8 @@ function AppContent() {
               className="w-full h-full rounded-2xl shadow-lg bg-gradient-to-br from-blue-50 to-purple-50 overflow-hidden"
             >
               <Live2DViewer />
-              {/*<h3 className="text-lg font-semibold mb-4">数字人预览</h3>*/}
-              {/*<div className="aspect-square aspect-[9/13] bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl overflow-hidden">*/}
-              {/*  <Live2DViewer />*/}
-              {/*</div>*/}
             </motion.div>
 
-            {/*/!* User Info *!/*/}
-            {/*<motion.div*/}
-            {/*  initial={{ opacity: 0, x: 20 }}*/}
-            {/*  animate={{ opacity: 1, x: 0 }}*/}
-            {/*  transition={{ delay: 0.1 }}*/}
-            {/*  className="bg-white rounded-2xl shadow-lg p-6"*/}
-            {/*>*/}
-            {/*  <h3 className="text-lg font-semibold mb-4">用户信息</h3>*/}
-            {/*  <div className="space-y-3">*/}
-            {/*    <div className="flex items-center justify-between">*/}
-            {/*      <span className="text-gray-600">用户名</span>*/}
-            {/*      <span className="font-medium">{session.userName || '未登录'}</span>*/}
-            {/*    </div>*/}
-            {/*    <div className="flex items-center justify-between">*/}
-            {/*      <span className="text-gray-600">对话轮次</span>*/}
-            {/*      <span className="font-medium">{session.session?.conversation_count || 0}</span>*/}
-            {/*    </div>*/}
-            {/*    <div className="flex items-center justify-between">*/}
-            {/*      <span className="text-gray-600">档案完成度</span>*/}
-            {/*      <span className="font-medium">{profileCompletion}%</span>*/}
-            {/*    </div>*/}
-            {/*    <div className="flex items-center justify-between">*/}
-            {/*      <span className="text-gray-600">对话阶段</span>*/}
-            {/*      <span className="font-medium text-sm">{conversationStage}</span>*/}
-            {/*    </div>*/}
-            {/*  </div>*/}
-            {/*</motion.div>*/}
-
-            {/*/!* System Status *!/*/}
-            {/*<motion.div*/}
-            {/*  initial={{ opacity: 0, x: 20 }}*/}
-            {/*  animate={{ opacity: 1, x: 0 }}*/}
-            {/*  transition={{ delay: 0.2 }}*/}
-            {/*  className="bg-white rounded-2xl shadow-lg p-6"*/}
-            {/*>*/}
-            {/*  <h3 className="text-lg font-semibold mb-4">系统状态</h3>*/}
-            {/*  <div className="space-y-3">*/}
-            {/*    <div className="flex items-center justify-between">*/}
-            {/*      <span className="text-gray-600">LLM</span>*/}
-            {/*      <span className={`font-medium ${systemStatus.llm === 'normal' ? 'text-green-500' : 'text-red-500'}`}>*/}
-            {/*        {systemStatus.llm === 'normal' ? '正常' : '异常'}*/}
-            {/*      </span>*/}
-            {/*    </div>*/}
-            {/*    <div className="flex items-center justify-between">*/}
-            {/*      <span className="text-gray-600">TTS</span>*/}
-            {/*      <span className={`font-medium ${systemStatus.tts === 'normal' ? 'text-green-500' : 'text-red-500'}`}>*/}
-            {/*        {systemStatus.tts === 'normal' ? '正常' : '异常'}*/}
-            {/*      </span>*/}
-            {/*    </div>*/}
-            {/*    <div className="flex items-center justify-between">*/}
-            {/*      <span className="text-gray-600">ASR</span>*/}
-            {/*      <span className={`font-medium ${systemStatus.asr === 'normal' ? 'text-green-500' : 'text-red-500'}`}>*/}
-            {/*        {systemStatus.asr === 'normal' ? '正常' : '异常'}*/}
-            {/*      </span>*/}
-            {/*    </div>*/}
-            {/*  </div>*/}
-            {/*</motion.div>*/}
           </div>
         </div>
       </main>
