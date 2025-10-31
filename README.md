@@ -1,6 +1,6 @@
 # 悠悠 - AI情感陪伴数字人智能对话系统 (前端)
 
-这是一个基于 React + Vite + Tailwind CSS 的现代化前端项目,用于替代原有的 test.html 单页面应用。
+这是一个基于 React + Vite + Tailwind CSS 的现代化前端项目。
 
 ## 技术栈
 
