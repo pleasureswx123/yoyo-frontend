@@ -135,7 +135,7 @@ class Live2DService {
 
     const resolution = window.devicePixelRatio || 1
 
-    model.scale.set(scale / resolution );
+    model.scale.set(scale * 1.2 / resolution );
     model.anchor.set(0.5, 0.5);
     model.position.set(internalWidth / (2 * resolution), internalHeight / (2 * resolution));
   }

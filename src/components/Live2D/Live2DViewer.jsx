@@ -51,7 +51,7 @@ export function Live2DViewer() {
   }, [])
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full overflow-hidden">
       {/* Live2D 容器 */}
       <div
         ref={containerRef}
